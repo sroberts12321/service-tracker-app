@@ -1,5 +1,5 @@
 <script>
-		let data = [];
+	let data = [];
 </script>
 
 <svelte:head>

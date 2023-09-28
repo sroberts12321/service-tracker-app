@@ -1,35 +1,37 @@
 <script lang="ts">
 	import { readStore, writeStore } from '$lib/stores';
 	import type { Customer } from '$lib/customer';
-	import SvelteTable from 'svelte-table';
+	import { Table, Paginator } from '@skeletonlabs/skeleton';
+	import type { TableSource } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
-	// /**
-	//  * @type {any[]}
-	//  */
-	// let customerStore = [];
+	/**
+	 * @type {any[]}
+	 */
+	let customerStore: any[] = [];
 
-	// onMount(async () => {
-	// 	console.log('inside the onMount function');
-	// 	readStore('customers')
-	// 	.then((returnedCustomers) => {
-	// 		 returnedCustomers.forEach((/** @type {{ id: any; data: () => any; get: (arg0: string) => any; }} */ doc) => {
-	// 			customer = {
-	// 				id: doc.id,
-	// 				lastName: doc.get('lastName'),
-	// 				firstName: doc.get('firstName'),
-	// 				phone: doc.get('phone'),
-	// 				email: doc.get('email')
-	// 			}
-	// 			customerStore = [...customerStore, customer];
-	// 		});
-	// 	})
-	// 	.catch((err) => {
-	// 		console.error(err);
-	// 	})
-	// 	.finally(() => {
-	// 		console.log('Experiment completed');
-	// 	});	
-	// });
+	onMount(async () => {
+		readStore('customers')
+		.then((returnedCustomers) => {
+			 returnedCustomers.forEach((doc) => {
+				customer = {
+					id: doc.id,
+					lastName: doc.get('lastName'),
+					firstName: doc.get('firstName'),
+					phone: doc.get('phone'),
+					email: doc.get('email'),
+                    balance: doc.get('balance'),
+					notes: doc.get('notes')
+				}
+				customerStore = [...customerStore, customer];
+			});
+		})
+		.catch((err) => {
+			console.error(err);
+		})
+		.finally(() => {
+			console.log('Experiment completed');
+		});	
+	});
 
 	let id = '';
 	let lastName = '';
@@ -38,7 +40,7 @@
 	let email  = '';
 	let balance = 0;
 	let notes = '';
-	// let customer = {};
+	let customer: Customer = {id: id, lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes};
 
 	const addCustomer = () => {
 		const uniqueId = crypto.randomUUID();
@@ -64,6 +66,13 @@
 		balance = 0;
 		notes = '';
 	}
+
+	let paginationSettings = {
+	page: 0,
+	limit: 5,
+	size: customerStore.length,
+	amounts: [1,2,5,10],
+	} satisfies PaginationSettings;
 
 	const columns = [	
 	{
@@ -144,6 +153,12 @@
 		</button>	
 	</div>
 </div>
+
+<Paginator
+	bind:settings={paginationSettings}
+	showFirstLastButtons="{false}"
+	showPreviousNextButtons="{true}"
+/>
 <div class="table-container">
 	<!-- Native Table Element -->
 	<table class="table table-hover">
@@ -165,16 +180,3 @@
 		</tbody>
 	</table>
 </div>
-
-
-<div class="flex flex-col space-y-4 space-x-2 place-content-center w-full">
-	<SvelteTable columns={columns} rows={customerStore}>	
-	</SvelteTable>
-	<!-- {#each customerStore as customer}
-		<div class="">	
-			<p>{customer.lastName}</p>
-		</div>
-	{/each} -->
-</div>
-
-

@@ -1,16 +1,12 @@
-<script>
+<script lang="ts">
 
 	import { Table } from '@skeletonlabs/skeleton';
 	import { tableMapperValues } from '@skeletonlabs/skeleton';
 	import SvelteTable from 'svelte-table';
 	import { onMount } from 'svelte';
+	import type { Customer } from '$lib/customer';
 
-	/**
-	 * @type {any[]}
-	 */
-	let customers = [];
-
-	
+	let customers: any = [];
 
 	/**
 	 * @type {any[]}
