@@ -1,37 +1,26 @@
 <script lang="ts">
-	import { readStore, writeStore } from '$lib/stores';
 	import type { Customer } from '$lib/customer';
-	import { Table, Paginator } from '@skeletonlabs/skeleton';
-	import type { TableSource } from '@skeletonlabs/skeleton';
-	import { onMount } from 'svelte';
-	/**
-	 * @type {any[]}
-	 */
-	let customerStore: any[] = [];
+	import { onMount, onDestroy } from 'svelte';
+	import { createSearchStore, searchHandler } from '$lib/stores/search';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	const searchCustomers = data.customers.map((customer) => ({
+		...customer,
+		searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email}`
+	}));
+
+	const searchStore = createSearchStore(searchCustomers);
+	const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+
+	onDestroy(() => {
+		unsubscribe();
+	});
 
 	onMount(async () => {
-		readStore('customers')
-		.then((returnedCustomers) => {
-			 returnedCustomers.forEach((doc) => {
-				customer = {
-					id: doc.id,
-					lastName: doc.get('lastName'),
-					firstName: doc.get('firstName'),
-					phone: doc.get('phone'),
-					email: doc.get('email'),
-                    balance: doc.get('balance'),
-					notes: doc.get('notes')
-				}
-				customerStore = [...customerStore, customer];
-			});
-		})
-		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			console.log('Experiment completed');
-		});	
-	});
+		console.log(JSON.stringify(data) + ": this is the data");
+	})
 
 	let id = '';
 	let lastName = '';
@@ -40,21 +29,33 @@
 	let email  = '';
 	let balance = 0;
 	let notes = '';
-	let customer: Customer = {id: id, lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes};
+	$: searchTerms = `${lastName} ${firstName} ${email}`;
+	let customer: Customer = {
+		id, 
+		lastName, 
+		firstName, 
+		phone, 
+		email, 
+		balance, 
+		notes, 
+		searchTerms
+	};
 
 	const addCustomer = () => {
-		const uniqueId = crypto.randomUUID();
-		let customer: Customer = {
-			id: uniqueId,
-			lastName: lastName,
-			firstName: firstName,
-			phone: phone,
-			email: email,
-			balance: balance,
-			notes: notes
-		}
-		writeStore('customers', customer);
-		clearCustomer();
+		console.log(JSON.stringify(searchStore.search) + " : what does the search store say?");
+		// const uniqueId = crypto.randomUUID();
+		// let customer: Customer = {
+		// 	id: uniqueId,
+		// 	lastName: lastName,
+		// 	firstName: firstName,
+		// 	phone: phone,
+		// 	email: email,
+		// 	balance: balance,
+		// 	notes: notes,
+		// 	searchTerms: searchTerms
+		// }
+		// writeStore('customers', customer);
+		// clearCustomer();
 	}	
 
 	function clearCustomer() {
@@ -65,73 +66,8 @@
 		email  = '';
 		balance = 0;
 		notes = '';
-	}
-
-	let paginationSettings = {
-	page: 0,
-	limit: 5,
-	size: customerStore.length,
-	amounts: [1,2,5,10],
-	} satisfies PaginationSettings;
-
-	const columns = [	
-	{
-		key: "firstName",
-		title: "FIRST NAME",
-		value: v => v.firstName,
-		sortable: true,
-		filterOptions: rows => {
-		// use first letter of first_name to generate filter
-		let letrs = {};
-		rows.forEach(row => {
-			let letr = row.firstName.charAt(0);
-			if (letrs[letr] === undefined)
-			letrs[letr] = {
-				name: `${letr.toUpperCase()}`,
-				value: letr.toLowerCase(),
-			};
-		});
-		// fix order
-		letrs = Object.entries(letrs)
-			.sort()
-			.reduce((o, [k, v]) => ((o[k] = v), o), {});
-		return Object.values(letrs);
-		},
-		filterValue: v => v.firstName.charAt(0).toLowerCase(),
-	},
-	{
-		key: "lastName",
-		title: "LAST NAME",
-		value: v => v.lastName,
-		sortable: true,
-		filterOptions: rows => {
-		// use first letter of last_name to generate filter
-		let letrs = {};
-		rows.forEach(row => {
-			let letr = row.lastName.charAt(0);
-			if (letrs[letr] === undefined)
-			letrs[letr] = {
-				name: `${letr.toUpperCase()}`,
-				value: letr.toLowerCase(),
-			};
-		});
-		// fix order
-		letrs = Object.entries(letrs)
-			.sort()
-			.reduce((o, [k, v]) => ((o[k] = v), o), {});
-		return Object.values(letrs);
-		},
-		filterValue: v => v.lastName.charAt(0).toLowerCase(),
-	},
-	{
-		key: "email",
-		title: "EMAIL",
-		value: v => v.email,
-		renderValue: v => v.email.charAt(0).toUpperCase() + v.email.substring(1), // capitalize
-		sortable: true,
-		filterOptions: ["", "cat", "dog"], // provide array
-	},
-	];
+		searchTerms = '';
+	}	
 
 </script>
 
@@ -146,37 +82,19 @@
 		<form id="searchForm">
 			<label class="label mt-5">
 				<span>Last Name</span>
-				<input bind:value={lastName} class="input" type="text" placeholder="" />
+				<input bind:value={$searchStore.search} class="input" type="text" placeholder="Search..." />
 			</label>
 		<button on:click={addCustomer} id="searchBtn" type="button" class="btn variant-filled mt-5">
 			<span>Find</span>
 		</button>	
 	</div>
 </div>
-
-<Paginator
-	bind:settings={paginationSettings}
-	showFirstLastButtons="{false}"
-	showPreviousNextButtons="{true}"
-/>
-<div class="table-container">
-	<!-- Native Table Element -->
-	<table class="table table-hover">
-		<thead>
-			<tr>
-				<th>Last Name</th>
-				<th>First Name</th>
-				<th>Email</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each customerStore as row, i}
-				<tr>
-					<td>{row.lastName}</td>
-					<td>{row.firstName}</td>
-					<td>{row.email}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+<div>
+	{#each $searchStore.filtered as customer}
+	<div>
+		<h2>{customer.lastName}</h2>
+		<h3>{customer.firstName}</h3>
+		<p>{customer.email}</p>
+	</div>
+	{/each}
 </div>
