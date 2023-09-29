@@ -22,6 +22,7 @@ export const load = (async () => {
 	const getCustomers = async () => {
 		const res = await readStore('customers')
 		.then((returnedCustomers) => {
+			customerStore = [];
 			 returnedCustomers.forEach((doc) => {
 				customer = {
 					id: doc.id,
@@ -39,7 +40,7 @@ export const load = (async () => {
 			console.error(err);
 		})
 		.finally(() => {
-			console.log('Experiment completed');
+			console.log('customer fetching successful');
 		})
 		return customerStore;
 	}

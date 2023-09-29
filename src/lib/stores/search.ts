@@ -7,7 +7,6 @@ export const createSearchStore = (data) => {
         search: "",
     })
 
-    console.log('createSearchStore triggered');
     return {
         subscribe,
         set,
