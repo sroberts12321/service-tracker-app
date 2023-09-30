@@ -5,7 +5,7 @@ import "firebase/firestore";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { Firestore, getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { Firestore, getFirestore, collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,14 +27,31 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 export const writeStore = async (key: string, value: any) => {
-    try {
-        const docRef = await addDoc(collection(db, key), {
+
+    let documentObject = {};
+    if (key == 'services') {
+        const customerRef = doc(db, 'customers', value.customerId);
+        documentObject = {
+            customerId: customerRef,
+            dropOffDate: value.dropOffDate,
+            paid: value.paid,
+            pickUpDate: value.pickUpDate,
+            pickedUp: value.pickedUp,
+            referenceNum: value.referenceNum,
+            typeOfService: value.typeOfService
+        }
+    } else if (key == 'customers') {
+        documentObject = {
             lastName: value.lastName,
             firstName: value.firstName,
             phone: value.phone,
             email: value.email,
             balance: value.balance
-        });
+        }
+    }
+
+    try {
+        const docRef = await addDoc(collection(db, key), documentObject);
     } catch (e) {
         console.error("Error adding document: ", e);
     }

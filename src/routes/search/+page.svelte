@@ -39,12 +39,15 @@
 	</div>
 </div>
 <div class="container h-full mx-auto flex justify-center items-center">
-	<div class="w-3/5 place-content-center" >
+	<div class="w-4/5 place-content-center auto-cols-auto flex-row grid-cols-3 grid" >
 		{#each $searchStore.filtered as customer}
-		<div class="card card-hover p-4 text-center">
-			<h2 class="h2">{customer.lastName}, {customer.firstName}</h2>
-			<p class="mb-2">{customer.email}</p>
-			<button on:click={handleCustomerSelect(customer)} class="btn variant-filled">SELECT CUSTOMER</button>
+		<div class="card card-hover p-4 text-center m-5 grid content-between">
+			<div class="m-1">
+				<h2 class="h2">{customer.lastName}, {customer.firstName}</h2>
+			</div>
+			<div class="m-1">
+				<button on:click={handleCustomerSelect(customer)} class="btn variant-filled h">SELECT</button>
+			</div>
 		</div>
 		{/each}
 	</div>
