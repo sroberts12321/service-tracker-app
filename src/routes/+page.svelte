@@ -4,6 +4,28 @@
 	import { notifications } from '$lib/stores/notifications';
 	import Toast from '$lib/stores/Toast.svelte';
 	import { writeStore } from '$lib/stores';
+	import { onDestroy } from 'svelte';
+	import { createSearchStore, searchHandler } from '$lib/stores/search';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	const searchCustomers = data.customers.map((customer) => ({
+		...customer,
+		searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email}`
+	}));
+
+	const searchStore = createSearchStore(searchCustomers);
+	const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+
+	onDestroy(() => {
+		unsubscribe();
+	});
+
+	function handleCustomerSelect(customerObject) {
+		console.log(`${customerObject.id}: does the id show up?`)
+	}
+
 
 	let customerSelection = '';
 	let dropOffDate = '';
@@ -13,23 +35,7 @@
 	let referenceNum = 0;
 	let typeOfService = '';
 
-	const customerOptions: AutocompleteOption<string>[] = [
-		{
-			label: 'Claudette',
-			value: '',
-			keywords: 'Claudette Morel'
-		},
-		{
-			label: 'Meg',
-			value: '',
-			keywords: 'Meg Thomas'
-		},
-		{
-			label: 'Dwight',
-			value: '',
-			keywords: 'Dwight Fairfield'
-		}
-	];
+	const customerOptions: AutocompleteOption<string>[] = $searchStore.filtered;
 
 	async function addNewService() {
 		const uniqueId = crypto.randomUUID();
@@ -76,48 +82,53 @@
 
 <div class="container h-full mx-auto flex justify-center items-center">
 	<div class="space-y-5 mt-10">
-		<h1 class="h1">ADD SERVICE ORDER</h1>
+		<h1 class="h1">Add Service Order</h1>
 		<form id="orderForm">
-			<label class="label mt-5">
-				<span>Customer</span>
-				<input class="input w-full" type="search" name="demo" bind:value={customerSelection} placeholder="Search..." />
-				<div class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto" tabindex="-1">
-					<Autocomplete bind:input={customerSelection} options={customerOptions} on:selection={onCustomerSelection} />
-				</div>
-			</label>
-			<label class="label mt-5">
-				<span>Reference Number</span>
-				<input class="input" type="text" placeholder="0000" />
-			</label>
-			<label class="label mt-5">
-				<span>Dropoff Date</span>
-				<input class="input" type="date" placeholder="" />
-			</label>
-			<label class="label mt-5">
-				<span>Type of Service</span>
-				<select class="select">
-					<option value="1">Cleaning</option>
-					<option value="2">Alterations</option>
-				</select>
-			</label>
-			<div class="space-y-2 mt-5">
-				<label class="flex items-center space-x-2">
-					<input class="checkbox" type="checkbox" />
-					<p>Paid</p>
+			<div class="grid grid-cols-2">
+				<label class="label mt-5 mr-5">
+					<span>Customer</span>
+					<input class="input w-full" type="search" name="demo" bind:value={$searchStore.search} placeholder="Search..." />
+					<div class="card w-full max-w max-h-20 p-4 overflow-y-scroll" tabindex="-1">
+						<Autocomplete bind:input={customerSelection} options={$searchStore.filtered} on:selection={onCustomerSelection} />
+					</div>
 				</label>
-				<label class="flex items-center space-x-2">
-					<input class="checkbox" type="checkbox" />
-					<p>Picked up</p>
+				<label class="label mt-5">
+					<span>Reference Number</span>
+					<input class="input" type="text" placeholder="0000" />
+				</label>
+				<label class="label mt-5 mr-5">
+					<span>Dropoff Date</span>
+					<input class="input" type="date" placeholder="" />
+				</label>
+				<label class="label mt-5">
+					<span>Pickup Date</span>
+					<input class="input" type="date" placeholder="" />
+				</label>
+				<label class="label mt-5 mr-5">
+					<span>Type of Service</span>
+					<select class="select">
+						<option value="1">Cleaning</option>
+						<option value="2">Alterations</option>
+					</select>
+				</label>
+				<div class="mt-5 grid grid-cols-2">
+					<p class="col-span-2">
+						<span>Order Status</span>
+					</p>
+					<label class="flex items-center space-x-2">
+						<input class="checkbox" type="checkbox" />
+						<p>Paid</p>
+					</label>
+					<label class="flex items-center space-x-2">
+						<input class="checkbox" type="checkbox" />
+						<p>Picked up</p>
+					</label>
+				</div>
+				<label class="label mt-5 col-span-2">
+					<span>Notes: </span>
+					<textarea class="textarea" rows="4" placeholder="Notes for the order" />
 				</label>
 			</div>
-			<label class="label mt-5">
-				<span>Pickup Date</span>
-				<input class="input" type="date" placeholder="" />
-			</label>
-			<label class="label mt-5">
-				<span>Notes: </span>
-				<textarea class="textarea" rows="4" placeholder="Notes for the order" />
-			</label>
 		</form>
 		<button on:click={addNewService} type="button" class="btn variant-filled">
 			<span>Add</span>

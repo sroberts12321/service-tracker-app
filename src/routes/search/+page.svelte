@@ -43,10 +43,10 @@
 		{#each $searchStore.filtered as customer}
 		<div class="card card-hover p-4 text-center m-5 grid content-between">
 			<div class="m-1">
-				<h2 class="h2">{customer.lastName}, {customer.firstName}</h2>
+				<h3 class="h3">{customer.lastName}, {customer.firstName}</h3>
 			</div>
 			<div class="m-1">
-				<button on:click={handleCustomerSelect(customer)} class="btn variant-filled h">SELECT</button>
+				<button on:click={handleCustomerSelect(customer)} class="btn btn-sm variant-filled-tertiary h">SELECT</button>
 			</div>
 		</div>
 		{/each}
