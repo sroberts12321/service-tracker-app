@@ -1,5 +1,5 @@
-<script>
-	let data = [];
+<script lang="ts">
+	let referenceNum: string = '';
 </script>
 
 <svelte:head>
@@ -12,7 +12,7 @@
 		<h1 class="h1">Checkout Order</h1>
 		<form id="checkoutForm">
 			<label class="label mt-5">
-				<span>Last Name</span>
+				<span>Reference Number</span>
 				<input class="input" type="text" placeholder="" />
 			</label>
 		<button id="checkoutBtn" type="button" class="btn variant-filled mt-5">

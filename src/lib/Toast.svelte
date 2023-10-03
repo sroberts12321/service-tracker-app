@@ -1,7 +1,7 @@
 <script lang="ts">
     import { flip } from "svelte/animate";
     import { fly } from "svelte/transition";
-    import { notifications } from "./notifications.ts";
+    import { notifications } from "./stores/notifications";
 
     export let themes = {
         danger: "#E26D69",

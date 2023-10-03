@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import { readStore } from '$lib/stores';
+import { readStore } from '$lib/firebase';
 
 let customerStore: any[] = [];
 let id = '';

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { notifications } from '$lib/stores/notifications';
-	import Toast from '$lib/stores/Toast.svelte';
+	import Toast from '$lib/Toast.svelte';
 	import type { Customer } from '$lib/customer';
-	import { writeStore } from '$lib/stores';
+	import { writeStore } from '$lib/firebase';
 
 	let id = '';
 	let lastName = '';
