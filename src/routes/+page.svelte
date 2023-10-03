@@ -61,7 +61,7 @@
 		})
 		.finally(() => {
 			clearForm();
-			notifications.success('Customer Successfully Saved', 3000);
+			notifications.success('Service Successfully Saved', 3000);
 		});
 	}
 	function increment() {

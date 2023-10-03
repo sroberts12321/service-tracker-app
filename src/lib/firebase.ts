@@ -4,7 +4,18 @@ import "firebase/firestore";
 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { Firestore, getFirestore, collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
+import { 
+    Firestore, 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    getDocs, 
+    getDoc, 
+    doc, 
+    query, 
+    where, 
+    CollectionReference 
+} from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -24,10 +35,16 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
+const customerCollectionRef = collection(db, 'customers');
+const servicesCollectionRef = collection(db, 'services');
+
+let collectionRef: CollectionReference;
+
 export const writeStore = async (key: string, value: any) => {
 
     let documentObject = {};
     if (key == 'services') {
+        collectionRef = servicesCollectionRef;
         const customerRef = doc(db, 'customers', value.customerId);
         documentObject = {
             customerId: customerRef,
@@ -39,6 +56,7 @@ export const writeStore = async (key: string, value: any) => {
             typeOfService: value.typeOfService
         }
     } else if (key == 'customers') {
+        collectionRef = customerCollectionRef;
         documentObject = {
             lastName: value.lastName,
             firstName: value.firstName,
@@ -49,7 +67,7 @@ export const writeStore = async (key: string, value: any) => {
     }
 
     try {
-        const docRef = await addDoc(collection(db, key), documentObject);
+        const docRef = await addDoc(collectionRef, documentObject);
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -57,5 +75,12 @@ export const writeStore = async (key: string, value: any) => {
 
 export const readStore = async (key: string): Promise<any | undefined> => {
     const querySnapshot = await getDocs(collection(db, key));
+    return querySnapshot;
+}
+
+export const readCustomerDetail = async(key: string): Promise<any | undefined> => {
+    const customerRef = doc(db, 'customers', key);
+    const q = query(servicesCollectionRef, where('customerId', '==', customerRef))
+    const querySnapshot = await getDocs(q);
     return querySnapshot;
 }

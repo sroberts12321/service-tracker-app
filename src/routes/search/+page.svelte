@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { createSearchStore, searchHandler } from '$lib/stores/search';
+	import { readCustomerDetail } from '$lib/firebase';
 	import type { PageData } from './$types';
+	import CustomerDetail from '$lib/CustomerDetail.svelte';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
 	export let data: PageData;
+
+	const modalStore = getModalStore();
+	let customerDetailStore: any = [];
 
 	const searchCustomers = data.customers.map((customer) => ({
 		...customer,
@@ -17,8 +23,36 @@
 		unsubscribe();
 	});
 
-	function handleCustomerSelect(customerObject) {
-		console.log(`${customerObject.id}: does the id show up?`)
+	async function handleCustomerSelect(customerObject: any) {
+		const res = await readCustomerDetail(customerObject.id)
+		.then((returnedServices) => {
+			customerDetailStore = [];
+			 returnedServices.forEach((doc: any) => {
+				let service: any = {
+					serviceId    : doc.id,
+					dropOffDate  : doc.get('dropOffDate'),
+					paid         : doc.get('paid'),
+					pickUpDate   : doc.get('pickUpDate'),
+					pickedUp     : doc.get('pickedUp'),
+					referenceNum : doc.get('referenceNum'),
+					typeOfService: doc.get('typeOfService')
+				}
+				customerDetailStore = [...customerDetailStore, service];
+			});
+		})
+		.catch((err) => {
+			console.error(err);
+		})
+		.finally(() => {
+			const modal: ModalSettings = {
+				type: 'confirm',
+				title: 'Confirmation Alert',
+				body: 'Are you sure?',
+				response: (r: boolean) => console.log('response: ', r),
+			}
+			modalStore.trigger(modal);
+		})
+
 	}
 </script>
 
@@ -40,15 +74,21 @@
 </div>
 <div class="container h-full mx-auto flex justify-center items-center">
 	<div class="w-4/5 place-content-center auto-cols-auto flex-row grid-cols-3 grid" >
-		{#each $searchStore.filtered as customer}
-		<div class="card card-hover p-4 text-center m-5 grid content-between">
-			<div class="m-1">
-				<h3 class="h3">{customer.lastName}, {customer.firstName}</h3>
-			</div>
-			<div class="m-1">
-				<button on:click={handleCustomerSelect(customer)} class="btn btn-sm variant-filled-tertiary h">SELECT</button>
-			</div>
+		{#if $searchStore.search.length < 1}
+		<div class="">
 		</div>
-		{/each}
+		{:else}
+			{#each $searchStore.filtered as customer}
+			<div class="card card-hover p-4 text-center m-5 grid content-between">
+				<div class="m-1">
+					<h3 class="h3">{customer.lastName}, {customer.firstName}</h3>
+				</div>
+				<div class="m-1">
+					<button on:click={handleCustomerSelect(customer)} class="btn btn-sm variant-filled-tertiary h">SELECT</button>
+				</div>
+			</div>
+			{/each}
+		{/if}
+
 	</div>
 </div>

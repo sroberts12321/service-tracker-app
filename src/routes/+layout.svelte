@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
+	import { Modal, initializeStores } from '@skeletonlabs/skeleton';
 	import Header from './Header.svelte';
 
 	// Floating UI for Popups
@@ -7,8 +8,11 @@
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
+	initializeStores();
+
 </script>
 
+<Modal/>
 <div class="app">
 	<Header />
 	<main>
