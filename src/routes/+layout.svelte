@@ -12,7 +12,7 @@
 
 </script>
 
-<Modal/>
+<Modal />
 <div class="app">
 	<Header />
 	<main>

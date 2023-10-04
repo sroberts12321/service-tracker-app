@@ -4,7 +4,7 @@
 	import { readCustomerDetail } from '$lib/firebase';
 	import type { PageData } from './$types';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
 
 	export let data: PageData;
 
@@ -22,6 +22,10 @@
 	onDestroy(() => {
 		unsubscribe();
 	});
+
+	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
+		modalStore.trigger(settings);
+	}
 
 	async function handleCustomerSelect(customerObject: any) {
 		const res = await readCustomerDetail(customerObject.id)
@@ -44,13 +48,17 @@
 			console.error(err);
 		})
 		.finally(() => {
-			const modal: ModalSettings = {
-				type: 'confirm',
-				title: 'Confirmation Alert',
-				body: 'Are you sure?',
-				response: (r: boolean) => console.log('response: ', r),
-			}
-			modalStore.trigger(modal);
+			const c: ModalComponent = { ref: CustomerDetail };
+			const settings: ModalSettings = {
+				type: 'component',
+				component: c,
+				title: `${customerObject.firstName} ${customerObject.lastName}`,
+				body: 'Complete the form below and then press submit.',
+				meta: customerDetailStore,
+				buttonTextCancel: 'Close',
+				response: (r) => console.log('response:', r)
+			};
+			modalComponentForm(settings, c);
 		})
 
 	}

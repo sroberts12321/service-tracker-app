@@ -11,6 +11,7 @@ import {
     addDoc, 
     getDocs, 
     getDoc, 
+    setDoc,
     doc, 
     query, 
     where, 
@@ -82,5 +83,11 @@ export const readCustomerDetail = async(key: string): Promise<any | undefined> =
     const customerRef = doc(db, 'customers', key);
     const q = query(servicesCollectionRef, where('customerId', '==', customerRef))
     const querySnapshot = await getDocs(q);
+    return querySnapshot;
+}
+
+export const writeServiceUpdate = async(serviceId: string, paid: boolean, pickedUp: boolean, pickUpDate: string): Promise<any | undefined> =>{
+    const serviceRef = doc(db, 'services', serviceId);
+    const querySnapshot = await setDoc(serviceRef, { paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate }, { merge: true });
     return querySnapshot;
 }

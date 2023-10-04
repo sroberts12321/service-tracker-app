@@ -33,7 +33,7 @@
 
 	let customerSelection = '';
 	let selectedCustomerId = '';
-	let dropOffDate = (new Date()).toJSON().slice(0, 10);
+	let dropOffDate = (new Date().toLocaleDateString('en-us'));
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
@@ -98,34 +98,40 @@
 			<form id="orderForm">
 				<div class="grid grid-cols-2">
 					<label class="label mt-5 mr-5">
-						<span>Customer</span>
+						<span class="h4">Customer</span>
 						<input class="input w-full" type="text" bind:value={customerSelection} placeholder="Search..." />
 						<div class="card w-full max-w max-h-20 p-4 overflow-y-scroll" tabindex="-1">
 							<Autocomplete bind:input={customerSelection} options={customerStore} on:selection={onCustomerSelection} />
 						</div>
 					</label>
 					<label class="label mt-5">
-						<span>Reference Number</span>
+						<span class="h4">Reference Number</span>
 						<input class="input" type="text" bind:value={referenceNum} placeholder="0000" />
 					</label>
 					<label class="label mt-5 mr-5">
-						<span>Dropoff Date</span>
+						<span class="h4">Dropoff Date</span>
 						<input class="input" type="date" bind:value={dropOffDate}/>
 					</label>
 					<label class="label mt-5">
-						<span>Pickup Date</span>
+						<span class="h4">Pickup Date</span>
 						<input class="input" type="date" placeholder="" />
 					</label>
-					<label class="label mt-5 mr-5">
-						<span>Type of Service</span>
-						<select class="select" bind:value={typeOfService}>
-							<option value="Cleaning">Cleaning</option>
-							<option value="Alterations">Alterations</option>
-						</select>
+					<label class="label mt-5 mr-5 flex flex-col">
+						<div>
+							<span class="h4">Type of Service</span>
+						</div>
+						<div class="grid content-between">
+							{#each ['Cleaning', 'Alterations'] as service}
+								<label>
+									<input class="" type='radio' name='serviceType' value={service} bind:group={typeOfService} />
+									{service}
+								</label>
+							{/each}
+						</div>
 					</label>
 					<div class="mt-5 grid grid-cols-2">
 						<p class="col-span-2">
-							<span>Order Status</span>
+							<span class="h4">Order Status</span>
 						</p>
 						<label class="flex items-center space-x-2">
 							<input bind:value={paid} class="checkbox" type="checkbox" />
@@ -137,7 +143,7 @@
 						</label>
 					</div>
 					<label class="label mt-5 col-span-2">
-						<span>Notes: </span>
+						<span class="h4">Notes: </span>
 						<textarea class="textarea" rows="4" placeholder="Notes for the order" />
 					</label>
 				</div>
