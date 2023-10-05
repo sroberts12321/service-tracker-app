@@ -28,6 +28,7 @@
 	// Base Classes
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
+    const tableHeader = 'sticky top-0';
 
     async function serviceCheckInHandler(meta: unknown) {
         // meta.detail[0] = serviceId string
@@ -35,7 +36,7 @@
         // meta.detail[2] = pickedUp boolean
         // meta.detail[3] = pickUpDate string
 
-        writeServiceUpdate(meta.detail[0], !meta.detail[1], !meta.detail[2], (new Date().toLocaleDateString('en-us')));
+        writeServiceUpdate(meta.detail[0], !meta.detail[1], !meta.detail[2], (new Date()).toJSON().slice(0, 10));
         console.log('on selected: ', meta.detail[0]);
     }
 
@@ -48,7 +49,7 @@
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
         <div class="max-h-96 overflow-y-scroll">
-            <Table source={tableSimple} interactive={true} on:selected={serviceCheckInHandler}/>
+            <Table regionHead={tableHeader} source={tableSimple} interactive={true} on:selected={serviceCheckInHandler}/>
         </div>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">

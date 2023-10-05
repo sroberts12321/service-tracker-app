@@ -15,6 +15,7 @@ import {
     doc, 
     query, 
     where, 
+    orderBy,
     CollectionReference 
 } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use

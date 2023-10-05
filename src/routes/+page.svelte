@@ -33,12 +33,15 @@
 
 	let customerSelection = '';
 	let selectedCustomerId = '';
-	let dropOffDate = (new Date().toLocaleDateString('en-us'));
+	let dropOffDate = (new Date()).toJSON().slice(0, 10);
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
-	let referenceNum: number;
+	let referenceNum: string;
 	let typeOfService = 'Cleaning';
+	let refNumRegEx = new RegExp("[0-9]{'{'}4{'}'}$");
+	let numValidationRegEx = new RegExp('^[0-9]+$');
+	let listOfNumInput: string[] = [];
 
 	async function addNewService() {
 		const uniqueId = crypto.randomUUID();
@@ -65,10 +68,17 @@
 		});
 	}
 	function increment() {
-		if (referenceNum > 1000) {
-			referenceNum = 0;
+		if (Number(referenceNum) > 1000) {
+			referenceNum = '0000';
 		} else {	
-			referenceNum++;
+			referenceNum = (Number(referenceNum) + 1).toString();
+			referenceNum = (0).toString().repeat(4 - referenceNum.length) + referenceNum
+		}
+	}
+
+	function formatRefNum(refNum: string) {
+		if (refNum.length < 4) {
+			return(0).toString().repeat(4 - referenceNum.length) + referenceNum
 		}
 	}
 
@@ -82,6 +92,37 @@
 		increment();
 	}
 
+	/** @param {FocusEvent} event */
+	function handleOnBlur(event) {
+		if (!refNumRegEx.test(referenceNum)) {
+			if (referenceNum.length < 4) {
+				referenceNum = (0).toString().repeat(4 - referenceNum.length) + referenceNum
+			}
+		}
+		listOfNumInput = [];
+	}
+
+	/** @param {KeyboardEvent}*/
+	function handleRefNumValidation(event) {
+		let isBackspace = event.keyCode === 8;
+		if (!numValidationRegEx.test(event.key) && !isBackspace) {
+			event.preventDefault();
+		} else {
+			if (isBackspace) {
+				popListItem(listOfNumInput);
+			} else {
+				listOfNumInput = [...listOfNumInput, event.key]
+				if (listOfNumInput.length > 4) {
+					popListItem(listOfNumInput);
+					event.preventDefault();
+				}	
+			}
+		}
+	}
+
+	function popListItem(listToPop: any[]) {
+		listToPop = [...listToPop.slice(0, listToPop.length -1)];
+	}
 
 	function onCustomerSelection(event: CustomEvent<AutocompleteOption<string>>): void {
 		selectedCustomerId = event.detail.value;
@@ -106,7 +147,7 @@
 					</label>
 					<label class="label mt-5">
 						<span class="h4">Reference Number</span>
-						<input class="input" type="text" bind:value={referenceNum} placeholder="0000" />
+						<input class="input" on:blur={handleOnBlur} on:keydown={handleRefNumValidation} type="text" bind:value={referenceNum} placeholder="0000" />
 					</label>
 					<label class="label mt-5 mr-5">
 						<span class="h4">Dropoff Date</span>
