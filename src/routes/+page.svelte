@@ -109,19 +109,15 @@
 			event.preventDefault();
 		} else {
 			if (isBackspace) {
-				popListItem(listOfNumInput);
+				listOfNumInput = [...listOfNumInput.slice(0, listOfNumInput.length -1)];
 			} else {
 				listOfNumInput = [...listOfNumInput, event.key]
 				if (listOfNumInput.length > 4) {
-					popListItem(listOfNumInput);
+					listOfNumInput = [...listOfNumInput.slice(0, listOfNumInput.length -1)];
 					event.preventDefault();
 				}	
 			}
 		}
-	}
-
-	function popListItem(listToPop: any[]) {
-		listToPop = [...listToPop.slice(0, listToPop.length -1)];
 	}
 
 	function onCustomerSelection(event: CustomEvent<AutocompleteOption<string>>): void {

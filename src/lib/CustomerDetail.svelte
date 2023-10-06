@@ -36,8 +36,9 @@
         // meta.detail[2] = pickedUp boolean
         // meta.detail[3] = pickUpDate string
 
-        writeServiceUpdate(meta.detail[0], !meta.detail[1], !meta.detail[2], (new Date()).toJSON().slice(0, 10));
-        console.log('on selected: ', meta.detail[0]);
+        // need to refactor this into another modal or maybe a dialogue
+        // writeServiceUpdate(meta.detail[0], !meta.detail[1], !meta.detail[2], (new Date()).toJSON().slice(0, 10));
+        // console.log('on selected: ', meta.detail[0]);
     }
 
 </script>
