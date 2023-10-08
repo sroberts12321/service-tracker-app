@@ -34,9 +34,11 @@
 	let customerSelection = '';
 	let selectedCustomerId = '';
 	let dropOffDate = (new Date()).toJSON().slice(0, 10);
+	$: rawDate = new Date(dropOffDate);
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
+	let isReady = false;
 	let referenceNum: string;
 	let typeOfService = 'Cleaning';
 	let refNumRegEx = new RegExp("[0-9]{'{'}4{'}'}$");
@@ -50,6 +52,7 @@
 			customerId: selectedCustomerId,	
 			dropOffDate: dropOffDate,
 			paid: paid,
+			isReady: isReady,
 			pickUpDate: pickUpDate,
 			pickedUp: pickedUp,
 			referenceNum: referenceNum,
@@ -86,8 +89,6 @@
     	customerSelection = '';
     	dropOffDate = (new Date()).toJSON().slice(0, 10);
     	paid = false;
-    	pickUpDate  = '';
-    	pickedUp = false;
     	typeOfService = 'Cleaning';
 		increment();
 	}
@@ -124,7 +125,13 @@
 		selectedCustomerId = event.detail.value;
 		customerSelection = event.detail.label;
 		console.log(`${selectedCustomerId}: this is the customer selection label`);
-}
+	}
+
+	function handleDateSelection() {
+		console.log(`${dropOffDate} : drop off date`)
+		rawDate = new Date(dropOffDate);
+	}
+
 				
 </script>
 
@@ -133,27 +140,27 @@
 		<div class="space-y-5 mt-10">
 			<h1 class="h1">Add Service Order</h1>
 			<form id="orderForm">
-				<div class="grid grid-cols-2">
-					<label class="label mt-5 mr-5">
+				<div class="grid grid-cols-4">
+					<label class="label mt-5 mr-5 col-span-2">
 						<span class="h4">Customer</span>
 						<input class="input w-full" type="text" bind:value={customerSelection} placeholder="Search..." />
 						<div class="card w-full max-w max-h-20 p-4 overflow-y-scroll" tabindex="-1">
 							<Autocomplete bind:input={customerSelection} options={customerStore} on:selection={onCustomerSelection} />
 						</div>
 					</label>
-					<label class="label mt-5">
-						<span class="h4">Reference Number</span>
+					<label class="label mt-5 col-span-2">
+						<span class="h4">Service Number</span>
 						<input class="input" on:blur={handleOnBlur} on:keydown={handleRefNumValidation} type="text" bind:value={referenceNum} placeholder="0000" />
 					</label>
-					<label class="label mt-5 mr-5">
+					<label class="label mt-5 mr-5 col-span-2">
 						<span class="h4">Dropoff Date</span>
-						<input class="input" type="date" bind:value={dropOffDate}/>
+						<input class="input" on:blur={handleDateSelection} type="date" bind:value={dropOffDate}/>
 					</label>
-					<label class="label mt-5">
-						<span class="h4">Pickup Date</span>
-						<input class="input" type="date" placeholder="" />
+					<label class="label mt-5 col-span-2 row-span-2">
+						<span class="h4">Notes: </span>
+						<textarea class="textarea" rows="4" placeholder="Notes for the order" />
 					</label>
-					<label class="label mt-5 mr-5 flex flex-col">
+					<label class="label mt-5 mr-5 flex flex-col col-span-1">
 						<div>
 							<span class="h4">Type of Service</span>
 						</div>
@@ -166,7 +173,7 @@
 							{/each}
 						</div>
 					</label>
-					<div class="mt-5 grid grid-cols-2">
+					<div class="mt-5 grid grid-cols-2 col-span-1">
 						<p class="col-span-2">
 							<span class="h4">Order Status</span>
 						</p>
@@ -174,15 +181,7 @@
 							<input bind:value={paid} class="checkbox" type="checkbox" />
 							<p>Paid</p>
 						</label>
-						<label class="flex items-center space-x-2">
-							<input bind:value={pickedUp} class="checkbox" type="checkbox" />
-							<p>Picked up</p>
-						</label>
 					</div>
-					<label class="label mt-5 col-span-2">
-						<span class="h4">Notes: </span>
-						<textarea class="textarea" rows="4" placeholder="Notes for the order" />
-					</label>
 				</div>
 			</form>
 			<button disabled={!referenceNum || !customerSelection || !dropOffDate} on:click={addNewService} type="button" class="btn variant-filled">

@@ -32,6 +32,8 @@
 		.then((returnedServices) => {
 			customerDetailStore = [];
 			 returnedServices.forEach((doc: any) => {
+				let formattedDropOffDate = doc.get('dropOffDate');
+				console.log(formattedDropOffDate + ": unformatted drop off date type");
 				let service: any = {
 					serviceId    : doc.id,
 					dropOffDate  : doc.get('dropOffDate'),
@@ -53,7 +55,7 @@
 				type: 'component',
 				component: c,
 				title: `${customerObject.firstName} ${customerObject.lastName}`,
-				body: 'Complete the form below and then press submit.',
+				body: `Summary of services for ${customerObject.firstName} ${customerObject.lastName}`,
 				meta: customerDetailStore,
 				buttonTextCancel: 'Close',
 				response: (r) => console.log('response:', r)
