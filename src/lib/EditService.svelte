@@ -3,28 +3,20 @@
 	/** Exposes parent props to this component. */
 	export let parent: any;
 
-    // import { writeServiceUpdate } from './firebase';
-
-    onMount(async () => {
-        console.log('in customer detail: ' + `${JSON.stringify($modalStore[0])}`)
-    });
-
 	// Stores
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
+	import { writeServiceUpdate } from './firebase';
 	const modalStore = getModalStore();
 	const serviceData = $modalStore[0].meta;
 
-    const formData = {
-        name: serviceData.serviceId,
+    const serviceDetail = {
+        serviceId: serviceData.serviceId,
         paid: serviceData.paid,
         pickedUp: serviceData.pickedUp,
-		pickUpDate: (new Date()).toJSON().slice(0, 10)
-    }
-
-    function onFormSubmit(): void {
-        if($modalStore[0].response) $modalStore[0].response(formData);
-        modalStore.close();
+		pickUpDate: (new Date()).toJSON().slice(0, 10),
+		referenceNum: serviceData.referenceNum,
+		notes: serviceData.notes
     }
 
 	// Base Classes
@@ -33,6 +25,13 @@
     const tableHeader = 'sticky top-0';
     const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token'; 
 
+	async function editService() {
+		writeServiceUpdate(serviceDetail.serviceId, serviceDetail.paid, serviceDetail.pickedUp, serviceDetail.pickUpDate).then((returnedInfo) => {
+			JSON.stringify(returnedInfo);
+		}).catch((err) => {
+			console.error(err);
+		}).finally(() => {modalStore.close()});
+	}
 </script>
 
 <!-- @component creates a modal with a way of editing a given service. -->
@@ -42,32 +41,28 @@
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
        <form class="modal-form {cForm}">
-			<label class="label">
-				<span>Name</span>
-				<input class="input" type="text" bind:value={formData.name} placeholder="Enter name..." />
-			</label>
-			<div class="mt-5 grid grid-cols-2 col-span-1">
+			<div class="grid grid-cols-2 col-span-1">
 				<p class="col-span-2">
 					<span class="h4">Order Status</span>
 				</p>
 				<label class="flex items-center space-x-2">
-					<input bind:value={formData.paid} class="checkbox" type="checkbox" />
+					<input bind:checked={serviceDetail.paid} class="checkbox" type="checkbox" />
 					<p>Paid</p>
 				</label>
 				<label class="label">
 					<span>Picked Up</span>
-					<input class="checkbox" type="checkbox" bind:value={formData.pickedUp} placeholder="Enter phone..." />
+					<input class="checkbox" type="checkbox" bind:checked={serviceDetail.pickedUp} placeholder="Enter phone..." />
 				</label>
 			</div>
 			<label class="label">
 				<span>Pick Up Date</span>
-				<input class="input" type="date" bind:value={formData.pickUpDate} placeholder="Enter email address..." />
+				<input class="input" type="date" bind:value={serviceDetail.pickUpDate} placeholder="Enter email address..." />
 			</label>
 		</form> 
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">
         <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-                <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Submit Change</button>
+                <button class="btn {parent.buttonPositive}" on:click={editService}>Submit Change</button>
     </footer>
 	</div>
 {/if}

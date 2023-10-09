@@ -33,7 +33,6 @@
 			customerDetailStore = [];
 			 returnedServices.forEach((doc: any) => {
 				let formattedDropOffDate = doc.get('dropOffDate');
-				console.log(formattedDropOffDate + ": unformatted drop off date type");
 				let service: any = {
 					serviceId    : doc.id,
 					dropOffDate  : doc.get('dropOffDate'),
@@ -41,7 +40,8 @@
 					pickUpDate   : doc.get('pickUpDate'),
 					pickedUp     : doc.get('pickedUp'),
 					referenceNum : doc.get('referenceNum'),
-					typeOfService: doc.get('typeOfService')
+					typeOfService: doc.get('typeOfService'),
+					notes        : doc.get('notes')
 				}
 				customerDetailStore = [...customerDetailStore, service];
 			});
@@ -55,7 +55,7 @@
 				type: 'component',
 				component: c,
 				title: `${customerObject.firstName} ${customerObject.lastName}`,
-				body: `Summary of services for ${customerObject.firstName} ${customerObject.lastName}`,
+				body: `Account Notes: \n${customerObject.notes}`,
 				meta: customerDetailStore,
 				buttonTextCancel: 'Close',
 				response: (r) => console.log('response:', r)

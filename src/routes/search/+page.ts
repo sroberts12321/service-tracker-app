@@ -33,6 +33,9 @@ export const load = (async () => {
                     balance: doc.get('balance'),
 					notes: doc.get('notes')
 				}
+				if (customer.notes === undefined) {
+					customer.notes = ' ';
+				}
 				customerStore = [...customerStore, customer];
 			});
 		})

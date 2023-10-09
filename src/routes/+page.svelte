@@ -27,7 +27,7 @@
 			console.error(err);
 		})
 		.finally(() => {
-			console.log('customer fetching successful');
+			console.log('initial data fetching successful');
 		})
 	})
 
@@ -39,6 +39,7 @@
 	let pickUpDate  = '';
 	let pickedUp = false;
 	let isReady = false;
+	let notes = '';
 	let referenceNum: string;
 	let typeOfService = 'Cleaning';
 	let refNumRegEx = new RegExp("[0-9]{'{'}4{'}'}$");
@@ -57,6 +58,7 @@
 			pickedUp: pickedUp,
 			referenceNum: referenceNum,
 			typeOfService: typeOfService,
+			notes: notes,
 		}
 
 		writeStore('services', service).then((returnedSomething) => {
@@ -90,6 +92,7 @@
     	dropOffDate = (new Date()).toJSON().slice(0, 10);
     	paid = false;
     	typeOfService = 'Cleaning';
+		notes = '';
 		increment();
 	}
 
@@ -124,15 +127,11 @@
 	function onCustomerSelection(event: CustomEvent<AutocompleteOption<string>>): void {
 		selectedCustomerId = event.detail.value;
 		customerSelection = event.detail.label;
-		console.log(`${selectedCustomerId}: this is the customer selection label`);
 	}
 
 	function handleDateSelection() {
-		console.log(`${dropOffDate} : drop off date`)
 		rawDate = new Date(dropOffDate);
 	}
-
-				
 </script>
 
 <div class="container h-full mx-auto flex justify-center items-center">
@@ -158,7 +157,7 @@
 					</label>
 					<label class="label mt-5 col-span-2 row-span-2">
 						<span class="h4">Notes: </span>
-						<textarea class="textarea" rows="4" placeholder="Notes for the order" />
+						<textarea bind:value={notes} class="textarea" rows="4" placeholder="Notes for the order" />
 					</label>
 					<label class="label mt-5 mr-5 flex flex-col col-span-1">
 						<div>
@@ -178,7 +177,7 @@
 							<span class="h4">Order Status</span>
 						</p>
 						<label class="flex items-center space-x-2">
-							<input bind:value={paid} class="checkbox" type="checkbox" />
+							<input bind:checked={paid} class="checkbox" type="checkbox" />
 							<p>Paid</p>
 						</label>
 					</div>

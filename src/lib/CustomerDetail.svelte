@@ -8,17 +8,10 @@
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
     import EditService from './EditService.svelte';
 
-    onMount(async () => {
-        console.log('in customer detail: ' + `${JSON.stringify($modalStore[0])}`)
-    });
-
 	// Stores
 	import { onMount } from 'svelte';
 	const modalStore = getModalStore();
     const customerData = $modalStore[0].meta;
-
-	let customerDetailStore: any = [];
-
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
 		modalStore.trigger(settings);
@@ -33,12 +26,8 @@
         // The data visibly shown in your table body UI.
         body: tableMapperValues(customerData, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
         // Optional: The data returned when interactive is enabled and a row is clicked.
-        meta: tableMapperValues(customerData, ['serviceId', 'paid', 'pickedUp', 'pickUpDate']),
+        meta: tableMapperValues(customerData, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
     };
-
-	function handleServiceUpdate(isUpdate: any) {
-		console.log(isUpdate + " :update response");
-	}
 
 	// Base Classes
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
@@ -46,31 +35,28 @@
     const tableHeader = 'sticky top-0';
 
     async function serviceCheckInHandler(meta: unknown) {
+		if (meta.detail[5] === undefined) {
+			meta.detail[5] = ' ';
+		}
 		const serviceDetail = {
 			serviceId: meta.detail[0],
 			paid: meta.detail[1],
 			pickedUp: meta.detail[2],
-			pickUpDate: meta.detail[3]
+			pickUpDate: meta.detail[3],
+			referenceNum: meta.detail[4],
+			notes:meta.detail[5]
 		}
 			const s: ModalComponent = { ref: EditService };
 			const settings: ModalSettings = {
 				type: 'component',
 				component: s,
-				title: `Deal with the data later`,
-				body: `Edit service`,
+				title: `Order #${meta.detail[4]}`,
+				body: `Order Notes: \n ${meta.detail[5]}`,
 				meta: serviceDetail,
 				buttonTextCancel: 'Close',
 				response: (r) => console.log('response:', r)
 			};
 			modalComponentForm(settings, s);
-        // meta.detail[0] = serviceId string
-        // meta.detail[1] = paid boolean
-        // meta.detail[2] = pickedUp boolean
-        // meta.detail[3] = pickUpDate string
-
-        // need to refactor this into another modal or maybe a dialogue
-        // writeServiceUpdate(meta.detail[0], !meta.detail[1], !meta.detail[2], (new Date()).toJSON().slice(0, 10));
-        console.log('on selected: ', meta.detail[0]);
     }
 
 </script>

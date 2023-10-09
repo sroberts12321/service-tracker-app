@@ -47,6 +47,7 @@ export const writeStore = async (key: string, value: any) => {
     let documentObject = {};
     if (key == 'services') {
         collectionRef = servicesCollectionRef;
+        console.log(value, " : value when creating a new service");
         const customerRef = doc(db, 'customers', value.customerId);
         documentObject = {
             customerId: customerRef,
@@ -55,7 +56,8 @@ export const writeStore = async (key: string, value: any) => {
             pickUpDate: value.pickUpDate,
             pickedUp: value.pickedUp,
             referenceNum: value.referenceNum,
-            typeOfService: value.typeOfService
+            typeOfService: value.typeOfService,
+            notes: value.notes
         }
     } else if (key == 'customers') {
         collectionRef = customerCollectionRef;
@@ -87,7 +89,7 @@ export const readCustomerDetail = async(key: string): Promise<any | undefined> =
     return querySnapshot;
 }
 
-export const writeServiceUpdate = async(serviceId: string, paid: boolean, pickedUp: boolean, pickUpDate: string): Promise<any | undefined> =>{
+export const writeServiceUpdate = async(serviceId: string, paid: boolean, pickedUp: boolean, pickUpDate: string): Promise<any | undefined> => {
     const serviceRef = doc(db, 'services', serviceId);
     const querySnapshot = await setDoc(serviceRef, { paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate }, { merge: true });
     return querySnapshot;
