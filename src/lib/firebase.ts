@@ -47,7 +47,6 @@ export const writeStore = async (key: string, value: any) => {
     let documentObject = {};
     if (key == 'services') {
         collectionRef = servicesCollectionRef;
-        console.log(value, " : value when creating a new service");
         const customerRef = doc(db, 'customers', value.customerId);
         documentObject = {
             customerId: customerRef,

@@ -3,33 +3,42 @@
 	/** Exposes parent props to this component. */
 	export let parent: any;
 
-    import { Table, tableMapperValues, type TableSource } from '@skeletonlabs/skeleton';
-    // import { writeServiceUpdate } from './firebase';
-	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
+    import { 
+		Table, 
+		tableMapperValues, 
+		getModalStore, 
+		SlideToggle,
+		type TableSource, 
+		type ModalSettings, 
+		type ModalComponent 
+	} from '@skeletonlabs/skeleton';
+
     import EditService from './EditService.svelte';
 
 	// Stores
-	import { onMount } from 'svelte';
 	const modalStore = getModalStore();
     const customerData = $modalStore[0].meta;
+	let isAllServices = false;
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
 		modalStore.trigger(settings);
 		modalStore.close();
 	}
 
-
-
-    const tableSimple: TableSource = {
-        // A list of heading labels.
+    const allServicesTableData: TableSource = {
         head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
-        // The data visibly shown in your table body UI.
-        body: tableMapperValues(customerData, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
-        // Optional: The data returned when interactive is enabled and a row is clicked.
-        meta: tableMapperValues(customerData, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
+        body: tableMapperValues(customerData.allServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
+        meta: tableMapperValues(customerData.allServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
     };
 
-	// Base Classes
+    const activeServicesTableData: TableSource = {
+        head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
+        body: tableMapperValues(customerData.activeServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
+        meta: tableMapperValues(customerData.activeServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
+    };
+
+	$: tableData = isAllServices ? allServicesTableData : activeServicesTableData;
+
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
     const tableHeader = 'sticky top-0';
@@ -68,11 +77,12 @@
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
         <div class="max-h-96 overflow-y-scroll">
-            <Table regionHead={tableHeader} source={tableSimple} interactive={true} on:selected={serviceCheckInHandler}/>
+            <Table regionHead={tableHeader} source={tableData} interactive={true} on:selected={serviceCheckInHandler}/>
         </div>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-    </footer>
+			<SlideToggle name="slider-label" class="w-48" bind:checked={isAllServices}>{isAllServices ? 'All Services' : 'Not Picked Up'}</SlideToggle>
+			<button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
+		</footer>
 	</div>
 {/if}

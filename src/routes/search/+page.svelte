@@ -9,7 +9,11 @@
 	export let data: PageData;
 
 	const modalStore = getModalStore();
-	let customerDetailStore: any = [];
+	let customerServiceObject: any = {
+		"allServices": [],
+		"activeServices": []
+	};
+
 
 	const searchCustomers = data.customers.map((customer) => ({
 		...customer,
@@ -30,7 +34,10 @@
 	async function handleCustomerSelect(customerObject: any) {
 		const res = await readCustomerDetail(customerObject.id)
 		.then((returnedServices) => {
-			customerDetailStore = [];
+			customerServiceObject = {
+					"allServices": [],
+					"activeServices": []
+				};
 			 returnedServices.forEach((doc: any) => {
 				let formattedDropOffDate = doc.get('dropOffDate');
 				let service: any = {
@@ -43,7 +50,10 @@
 					typeOfService: doc.get('typeOfService'),
 					notes        : doc.get('notes')
 				}
-				customerDetailStore = [...customerDetailStore, service];
+				if (service.pickedUp === false) {
+					customerServiceObject.activeServices = [...customerServiceObject.activeServices, service]
+				}
+					customerServiceObject.allServices = [...customerServiceObject.allServices, service]
 			});
 		})
 		.catch((err) => {
@@ -56,7 +66,7 @@
 				component: c,
 				title: `${customerObject.firstName} ${customerObject.lastName}`,
 				body: `Account Notes: \n${customerObject.notes}`,
-				meta: customerDetailStore,
+				meta: customerServiceObject,
 				buttonTextCancel: 'Close',
 				response: (r) => console.log('response:', r)
 			};
