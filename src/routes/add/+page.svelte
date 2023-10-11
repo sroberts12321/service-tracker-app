@@ -11,11 +11,13 @@
 	let email  = '';
 	let balance = 0;
 	let notes = '';
-	$: searchTerms = `${firstName} ${lastName} ${email}`
+	let nickname = '';
+	$: searchTerms = `${firstName} ${lastName} ${email} ${nickname}`
 	let customer: Customer = {
 			id: id,
 			lastName: lastName,
 			firstName: firstName,
+			nickname: nickname,
 			phone: phone,
 			email: email,
 			balance: balance,
@@ -29,6 +31,7 @@
 			id: uniqueId,
 			lastName: lastName,
 			firstName: firstName,
+			nickname: nickname,
 			phone: phone,
 			email: email,
 			balance: balance,
@@ -51,6 +54,7 @@
 		id = '';
 		lastName = '';
 		firstName = '';
+		nickname = '';
 		phone = '';
 		email  = '';
 		balance = 0;
@@ -84,9 +88,9 @@
 					<span>Email</span>
 					<input bind:value={email} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5">
-					<span>Balance</span>
-					<input bind:value={balance} class="input w-24" type="number" placeholder="" />
+				<label class="label mt-5 mr-5">
+					<span>Nickname</span>
+					<input bind:value={nickname} class="input" type="text" placeholder="" />
 				</label>
 				<label class="label mt-5">
 					<span>Notes: </span>
