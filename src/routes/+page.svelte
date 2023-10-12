@@ -1,6 +1,5 @@
 <script lang="ts">	
-	import { Autocomplete } from '@skeletonlabs/skeleton';
-	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
+	import { Autocomplete, InputChip, type AutocompleteOption } from '@skeletonlabs/skeleton';
 	import { notifications } from '$lib/stores/notifications';
 	import { onMount } from 'svelte';
 	import { readStore, writeStore } from '$lib/firebase';
@@ -34,17 +33,20 @@
 	let customerSelection = '';
 	let selectedCustomerId = '';
 	let dropOffDate = (new Date()).toJSON().slice(0, 10);
-	$: rawDate = new Date(dropOffDate);
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
 	let isReady = false;
 	let notes = '';
 	let referenceNum: string;
+	let lastEnteredRefNum: string;
+	let listOfRefNums: string[] = [];
 	let typeOfService = 'Cleaning';
 	let refNumRegEx = new RegExp("[0-9]{'{'}4{'}'}$");
 	let numValidationRegEx = new RegExp('^[0-9]+$');
-	let listOfNumInput: string[] = [];
+	$: if (listOfRefNums.length > 0) {
+		iterateRefNum();
+	}
 
 	async function addNewService() {
 		const uniqueId = crypto.randomUUID();
@@ -56,7 +58,7 @@
 			isReady: isReady,
 			pickUpDate: pickUpDate,
 			pickedUp: pickedUp,
-			referenceNum: referenceNum,
+			referenceNum: listOfRefNums.toString(),
 			typeOfService: typeOfService,
 			notes: notes,
 		}
@@ -73,17 +75,12 @@
 		});
 	}
 	function increment() {
-		if (Number(referenceNum) > 1000) {
+		if (Number(lastEnteredRefNum) > 9998) {
+			console.log(lastEnteredRefNum + " what is the last num");
 			referenceNum = '0000';
 		} else {	
-			referenceNum = (Number(referenceNum) + 1).toString();
+			referenceNum = (Number(lastEnteredRefNum) + 1).toString();
 			referenceNum = (0).toString().repeat(4 - referenceNum.length) + referenceNum
-		}
-	}
-
-	function formatRefNum(refNum: string) {
-		if (refNum.length < 4) {
-			return(0).toString().repeat(4 - referenceNum.length) + referenceNum
 		}
 	}
 
@@ -92,35 +89,26 @@
     	dropOffDate = (new Date()).toJSON().slice(0, 10);
     	paid = false;
     	typeOfService = 'Cleaning';
+		listOfRefNums = [];
 		notes = '';
 		increment();
-	}
+	}	
 
-	/** @param {FocusEvent} event */
-	function handleOnBlur(event) {
-		if (!refNumRegEx.test(referenceNum)) {
-			if (referenceNum.length < 4) {
-				referenceNum = (0).toString().repeat(4 - referenceNum.length) + referenceNum
+	function inputChipValidation(event: Event) {
+		if (event.data != null) {
+			if (!numValidationRegEx.test(event.data) || referenceNum.length > 4) {
+				referenceNum = referenceNum.slice(0, referenceNum.length - 1);
 			}
 		}
-		listOfNumInput = [];
 	}
 
-	/** @param {KeyboardEvent}*/
-	function handleRefNumValidation(event) {
-		let isBackspace = event.keyCode === 8;
-		if (!numValidationRegEx.test(event.key) && !isBackspace) {
-			event.preventDefault();
-		} else {
-			if (isBackspace) {
-				listOfNumInput = [...listOfNumInput.slice(0, listOfNumInput.length -1)];
-			} else {
-				listOfNumInput = [...listOfNumInput, event.key]
-				if (listOfNumInput.length > 4) {
-					listOfNumInput = [...listOfNumInput.slice(0, listOfNumInput.length -1)];
-					event.preventDefault();
-				}	
-			}
+	function onChipAdd() {
+		lastEnteredRefNum = referenceNum;
+	}
+
+	function iterateRefNum() {
+		if (lastEnteredRefNum != null) {
+			increment();
 		}
 	}
 
@@ -129,9 +117,6 @@
 		customerSelection = event.detail.label;
 	}
 
-	function handleDateSelection() {
-		rawDate = new Date(dropOffDate);
-	}
 </script>
 
 <div class="container h-full mx-auto flex justify-center items-center">
@@ -147,13 +132,14 @@
 							<Autocomplete bind:input={customerSelection} options={customerStore} on:selection={onCustomerSelection} />
 						</div>
 					</label>
+					<!-- svelte-ignore a11y-label-has-associated-control -->
 					<label class="label mt-5 col-span-2">
 						<span class="h4">Service Number</span>
-						<input class="input" on:blur={handleOnBlur} on:keydown={handleRefNumValidation} type="text" bind:value={referenceNum} placeholder="0000" />
+						<InputChip on:add={onChipAdd} on:input={inputChipValidation} hidden={true} maxlength={4} size={0} type="text" bind:input={referenceNum} bind:value={listOfRefNums} name="chips" placeholder={"0000"}/>
 					</label>
 					<label class="label mt-5 mr-5 col-span-2">
 						<span class="h4">Dropoff Date</span>
-						<input class="input" on:blur={handleDateSelection} type="date" bind:value={dropOffDate}/>
+						<input class="input" type="date" bind:value={dropOffDate}/>
 					</label>
 					<label class="label mt-5 col-span-2 row-span-2">
 						<span class="h4">Notes: </span>
@@ -183,7 +169,7 @@
 					</div>
 				</div>
 			</form>
-			<button disabled={!referenceNum || !customerSelection || !dropOffDate} on:click={addNewService} type="button" class="btn variant-filled">
+			<button disabled={!(listOfRefNums.length > 0) || !customerSelection || !dropOffDate} on:click={addNewService} type="button" class="btn variant-filled">
 				<span>Add</span>
 			</button>
 		</div>
