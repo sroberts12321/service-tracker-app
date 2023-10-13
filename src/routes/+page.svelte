@@ -1,5 +1,5 @@
 <script lang="ts">	
-	import { Autocomplete, InputChip, type AutocompleteOption } from '@skeletonlabs/skeleton';
+	import { Autocomplete, InputChip, popup, type AutocompleteOption, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { notifications } from '$lib/stores/notifications';
 	import { onMount } from 'svelte';
 	import { readStore, writeStore } from '$lib/firebase';
@@ -42,7 +42,6 @@
 	let lastEnteredRefNum: string;
 	let listOfRefNums: string[] = [];
 	let typeOfService = 'Cleaning';
-	let refNumRegEx = new RegExp("[0-9]{'{'}4{'}'}$");
 	let numValidationRegEx = new RegExp('^[0-9]+$');
 	$: if (listOfRefNums.length > 0) {
 		iterateRefNum();
@@ -50,6 +49,10 @@
 
 	async function addNewService() {
 		const uniqueId = crypto.randomUUID();
+		if (listOfRefNums.length > 0) {
+			referenceNum = listOfRefNums.join(', ');
+		}
+
 		let service: any = {
 			serviceId: uniqueId,
 			customerId: selectedCustomerId,	
@@ -58,7 +61,7 @@
 			isReady: isReady,
 			pickUpDate: pickUpDate,
 			pickedUp: pickedUp,
-			referenceNum: listOfRefNums.toString(),
+			referenceNum: referenceNum,
 			typeOfService: typeOfService,
 			notes: notes,
 		}
@@ -74,13 +77,12 @@
 			notifications.success('Service Successfully Saved', 3000);
 		});
 	}
+
 	function increment() {
-		if (Number(lastEnteredRefNum) > 9998) {
-			console.log(lastEnteredRefNum + " what is the last num");
-			referenceNum = '0000';
+		if (Number(lastEnteredRefNum) > 9999) {
+			referenceNum = '1';
 		} else {	
 			referenceNum = (Number(lastEnteredRefNum) + 1).toString();
-			referenceNum = (0).toString().repeat(4 - referenceNum.length) + referenceNum
 		}
 	}
 
@@ -89,14 +91,18 @@
     	dropOffDate = (new Date()).toJSON().slice(0, 10);
     	paid = false;
     	typeOfService = 'Cleaning';
-		listOfRefNums = [];
 		notes = '';
-		increment();
+		if (listOfRefNums.length > 0) {
+			increment();
+		} else {
+			referenceNum = (Number(referenceNum) + 1).toString();
+		}
+		listOfRefNums = [];
 	}	
 
 	function inputChipValidation(event: Event) {
 		if (event.data != null) {
-			if (!numValidationRegEx.test(event.data) || referenceNum.length > 4) {
+			if (!numValidationRegEx.test(event.data) || referenceNum.length > 5) {
 				referenceNum = referenceNum.slice(0, referenceNum.length - 1);
 			}
 		}
@@ -117,6 +123,12 @@
 		customerSelection = event.detail.label;
 	}
 
+	let popupSettings: PopupSettings = {
+		event: 'focus-click',
+		target: 'popupAutocomplete',
+		placement: 'bottom',
+	}
+
 </script>
 
 <div class="container h-full mx-auto flex justify-center items-center">
@@ -127,9 +139,20 @@
 				<div class="grid grid-cols-4">
 					<label class="label mt-5 mr-5 col-span-2">
 						<span class="h4">Customer</span>
-						<input class="input w-full" type="text" bind:value={customerSelection} placeholder="Search..." />
-						<div class="card w-full max-w max-h-20 p-4 overflow-y-scroll" tabindex="-1">
-							<Autocomplete bind:input={customerSelection} options={customerStore} on:selection={onCustomerSelection} />
+						<input
+							class="input autocomplete"
+							type="search"
+							name="autocomplete-search"
+							bind:value={customerSelection}
+							placeholder="Search..."
+							use:popup={popupSettings}
+						/>
+						<div data-popup="popupAutocomplete" class="max-h-20 overflow-y-scroll card w-72">
+							<Autocomplete
+								bind:input={customerSelection}
+								options={customerStore}
+								on:selection={onCustomerSelection}
+							/>
 						</div>
 					</label>
 					<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -169,7 +192,7 @@
 					</div>
 				</div>
 			</form>
-			<button disabled={!(listOfRefNums.length > 0) || !customerSelection || !dropOffDate} on:click={addNewService} type="button" class="btn variant-filled">
+			<button disabled={!(referenceNum || (listOfRefNums.length > 0)) || !customerSelection || !dropOffDate} on:click={addNewService} type="button" class="btn variant-filled">
 				<span>Add</span>
 			</button>
 		</div>
