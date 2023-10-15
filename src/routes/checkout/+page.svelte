@@ -2,9 +2,8 @@
 	
 	import { onDestroy } from 'svelte';
 	import { createSearchStore, searchHandler } from '$lib/stores/search';
-	import { readCustomerDetail } from '$lib/firebase';
 	import type { PageData } from './$types';
-	import CustomerDetail from '$lib/CustomerDetail.svelte';
+	import EditService from '$lib/EditService.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
 
 	let referenceNum: string = '';
@@ -16,6 +15,9 @@
 		"activeServices": []
 	};
 
+	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
+		modalStore.trigger(settings);
+	}
 
 	const searchServices = data.services.map((service) => ({
 		...service,
@@ -30,8 +32,29 @@
 	});
 
 	async function handleServiceSelect(serviceObject: any) {
-		console.log(JSON.stringify(serviceObject));
-	}
+		if (serviceObject.notes === undefined) {
+			serviceObject.notes = ' ';
+		}
+		const serviceDetail = {
+			serviceId: serviceObject.id,
+			paid: serviceObject.paid,
+			pickedUp: serviceObject.pickedUp,
+			pickUpDate: serviceObject.pickUpDate,
+			referenceNum: serviceObject.referenceNum,
+			notes: serviceObject.notes
+		}
+			const s: ModalComponent = { ref: EditService };
+			const settings: ModalSettings = {
+				type: 'component',
+				component: s,
+				title: `Order #${serviceObject.referenceNum}`,
+				body: `Order Notes: \n ${serviceObject.notes}`,
+				meta: serviceDetail,
+				buttonTextCancel: 'Close',
+				response: (r) => console.log('response:', r)
+			};
+			modalComponentForm(settings, s);
+    }
 
 </script>
 
@@ -62,7 +85,7 @@
 			{#each $searchStore.filtered as service}
 			<div class="card card-hover p-4 text-center m-5 grid content-between">
 				<div class="m-1">
-					<h3 class="h3">{service.lastName}, {service.firstName}</h3>
+					<h3 class="h3">{service.referenceNum}</h3>
 				</div>
 				<div class="m-1">
 					<button on:click={handleServiceSelect(service)} class="btn btn-sm variant-filled-tertiary h">SELECT</button>
