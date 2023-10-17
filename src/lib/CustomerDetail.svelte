@@ -71,7 +71,14 @@
 
 	async function handleEditCustomer(meta: unknown) {
 		const customerInfo = {
-
+			customerId: customerData.customerInfo.id,
+			lastName: customerData.customerInfo.lastName,
+			firstName: customerData.customerInfo.firstName,
+			phone: customerData.customerInfo.phone,
+			email: customerData.customerInfo.email,
+			balance: customerData.customerInfo.balance,
+			notes: customerData.customerInfo.notes,
+			nickname: customerData.customerInfo.nickname
 		}
 			const s: ModalComponent = { ref: EditCustomer };
 			const settings: ModalSettings = {

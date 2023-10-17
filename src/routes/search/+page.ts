@@ -5,6 +5,7 @@ let customerStore: any[] = [];
 let id = '';
 let lastName = '';
 let firstName = '';
+let nickname = '';
 let phone = '';
 let email  = '';
 let balance = 0;
@@ -13,6 +14,7 @@ let customer: any = {
     id, 
     lastName, 
     firstName, 
+    nickname, 
     phone, 
     email, 
     balance, 
@@ -28,6 +30,7 @@ export const load = (async () => {
 					id: doc.id,
 					lastName: doc.get('lastName'),
 					firstName: doc.get('firstName'),
+					nickname: doc.get('nickname'),
 					phone: doc.get('phone'),
 					email: doc.get('email'),
                     balance: doc.get('balance'),

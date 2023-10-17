@@ -17,7 +17,7 @@
 
 	const searchCustomers = data.customers.map((customer) => ({
 		...customer,
-		searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email}`
+		searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email} ${customer.nickname}`
 	}));
 
 	const searchStore = createSearchStore(searchCustomers);
@@ -32,11 +32,13 @@
 	}
 
 	async function handleCustomerSelect(customerObject: any) {
+		console.log(JSON.stringify(customerObject) + " : customer obj");
 		const res = await readCustomerDetail(customerObject.id)
 		.then((returnedServices) => {
 			customerServiceObject = {
 					"allServices": [],
-					"activeServices": []
+					"activeServices": [],
+					"customerInfo": customerObject
 				};
 			 returnedServices.forEach((doc: any) => {
 				let formattedDropOffDate = doc.get('dropOffDate');

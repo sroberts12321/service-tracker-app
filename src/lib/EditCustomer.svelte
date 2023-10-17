@@ -4,9 +4,8 @@
 	export let parent: any;
 
 	// Stores
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import { onMount } from 'svelte';
-	import { writeCustomerUpdate } from './firebase';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { writeCustomerUpdate, deleteCustomer } from './firebase';
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
 
@@ -34,6 +33,22 @@
 			console.error(err);
 		}).finally(() => {modalStore.close()});
 	}
+
+const modal: ModalSettings = {
+	type: 'confirm',
+	title: 'Please Confirm',
+	body: 'Are you sure you want to delete this customer?',
+	response: (r: boolean) => {
+		if (r) {
+			deleteCustomer(customerData.customerId);
+		}
+	},
+};
+	function confirmDelete() {
+		modalStore.close();
+		modalStore.trigger(modal);
+	}
+
 </script>
 
 <!-- @component creates a modal with a way of editing a given service. -->
@@ -46,7 +61,7 @@
 			<div class="grid grid-cols-2">
 				<label class="label mt-5 mr-5">
 					<span>Last Name</span>
-					<input bind:value={customerDetail.lastName} class="input" type="text" placeholder="" required/>
+					<input disabled={true} bind:value={customerDetail.lastName} class="input" type="text" placeholder="" required/>
 				</label>
 				<label class="label mt-5">
 					<span>First Name</span>
@@ -72,6 +87,7 @@
 		</form>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">
+		<button class="btn variant-filled-error" type="button" on:click={confirmDelete}>Delete</button>
         <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
                 <button class="btn {parent.buttonPositive}" on:click={handleEditCustomer}>Submit Change</button>
     </footer>

@@ -9,6 +9,7 @@ import {
     getFirestore, 
     collection, 
     addDoc, 
+    deleteDoc,
     getDocs, 
     getDoc, 
     setDoc,
@@ -61,11 +62,15 @@ export const writeStore = async (key: string, value: any) => {
     } else if (key == 'customers') {
         collectionRef = customerCollectionRef;
         documentObject = {
-            lastName: value.lastName,
-            firstName: value.firstName,
-            phone: value.phone,
-            email: value.email,
-            balance: value.balance
+			id: value.uniqueId,
+			lastName: value.lastName,
+			firstName: value.firstName,
+			nickname: value.nickname,
+			phone: value.phone,
+			email: value.email,
+			balance: value.balance,
+			notes: value.notes,
+			searchTerms: value.searchTerms,
         }
     }
 
@@ -97,5 +102,11 @@ export const writeServiceUpdate = async(serviceId: string, paid: boolean, picked
 export const writeCustomerUpdate = async(customerId: string, lastName: string, firstName: string, phone: string, email: string, balance: number, notes: string, nickname: string): Promise<any | undefined> => {
     const customerRef = doc(db, 'customers', customerId);
     const querySnapshot = await setDoc(customerRef, { lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname }, { merge: true });
+    return querySnapshot;
+}
+
+export const deleteCustomer = async(customerId: string): Promise<any | undefined> => {
+    const customerRef = doc(db, 'customers', customerId);
+    const querySnapshot = await deleteDoc(customerRef);
     return querySnapshot;
 }
