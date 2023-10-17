@@ -93,3 +93,9 @@ export const writeServiceUpdate = async(serviceId: string, paid: boolean, picked
     const querySnapshot = await setDoc(serviceRef, { paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate }, { merge: true });
     return querySnapshot;
 }
+
+export const writeCustomerUpdate = async(customerId: string, lastName: string, firstName: string, phone: string, email: string, balance: number, notes: string, nickname: string): Promise<any | undefined> => {
+    const customerRef = doc(db, 'customers', customerId);
+    const querySnapshot = await setDoc(customerRef, { lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname }, { merge: true });
+    return querySnapshot;
+}

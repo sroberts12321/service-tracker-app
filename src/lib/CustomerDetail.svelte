@@ -14,6 +14,7 @@
 	} from '@skeletonlabs/skeleton';
 
     import EditService from './EditService.svelte';
+    import EditCustomer from './EditCustomer.svelte';
 
 	// Stores
 	const modalStore = getModalStore();
@@ -68,6 +69,23 @@
 			modalComponentForm(settings, s);
     }
 
+	async function handleEditCustomer(meta: unknown) {
+		const customerInfo = {
+
+		}
+			const s: ModalComponent = { ref: EditCustomer };
+			const settings: ModalSettings = {
+				type: 'component',
+				component: s,
+				title: `Customer Info`,
+				body: `Customer Notes:`,
+				meta: customerInfo,
+				buttonTextCancel: 'Close',
+				response: (r) => console.log('response:', r)
+			};
+			modalComponentForm(settings, s);
+	}
+
 </script>
 
 <!-- @component creates a modal with a table of services for given customer object. -->
@@ -76,6 +94,7 @@
 	<div class="modal-example-form {cBase}">
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
+			<button class="btn {parent.buttonNeutral}" on:click={handleEditCustomer}>Edit</button>
         <div class="max-h-96 overflow-y-scroll">
             <Table regionHead={tableHeader} source={tableData} interactive={true} on:selected={serviceCheckInHandler}/>
         </div>
