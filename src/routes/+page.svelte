@@ -2,7 +2,9 @@
 	import { Autocomplete, InputChip, popup, type AutocompleteOption, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { notifications } from '$lib/stores/notifications';
 	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 	import { readStore, writeStore } from '$lib/firebase';
+	import { overridable } from '$lib/stores/customer-store';
 	import Toast from "$lib/Toast.svelte";
 
 	let customerStore: any = [];
@@ -14,10 +16,12 @@
 			customerStore = [];
 			 returnedCustomers.forEach((doc) => {
                 let customerName = `${doc.get('lastName')}, ${doc.get('firstName')}`;
+				let nickname: string = doc.get('nickname') != undefined ? doc.get('nickname') : ' ';
+                let customerKeywords = `${doc.get('lastName')}, ${doc.get('firstName')}, ${nickname}`;
 				customer = {
                     label: customerName,
                     value: doc.id,
-                    keywords: customerName
+                    keywords: customerKeywords
 				}
 				customerStore = [...customerStore, customer];
 			});
@@ -27,6 +31,7 @@
 		})
 		.finally(() => {
 			console.log('initial data fetching successful');
+			const writableStore = overridable(writable(customerStore));
 		})
 	})
 
