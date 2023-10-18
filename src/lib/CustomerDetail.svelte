@@ -99,9 +99,10 @@
 
 {#if $modalStore[0]}
 	<div class="modal-example-form {cBase}">
-		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
-		<article>{$modalStore[0].body ?? '(body missing)'}</article>
+		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}
 			<button class="btn {parent.buttonNeutral}" on:click={handleEditCustomer}>Edit</button>
+		</header>
+		<article>{$modalStore[0].body ?? '(body missing)'}</article>
         <div class="max-h-96 overflow-y-scroll">
             <Table regionHead={tableHeader} source={tableData} interactive={true} on:selected={serviceCheckInHandler}/>
         </div>
