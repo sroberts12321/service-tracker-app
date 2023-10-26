@@ -62,7 +62,7 @@ export const writeStore = async (key: string, value: any) => {
     } else if (key == 'customers') {
         collectionRef = customerCollectionRef;
         documentObject = {
-			id: value.uniqueId,
+			id: value.id,
 			lastName: value.lastName,
 			firstName: value.firstName,
 			nickname: value.nickname,
