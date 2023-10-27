@@ -4,6 +4,7 @@ import "firebase/firestore";
 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { notifications } from '$lib/stores/notifications';
 import { 
     Firestore, 
     getFirestore, 
@@ -76,8 +77,10 @@ export const writeStore = async (key: string, value: any) => {
 
     try {
         const docRef = await addDoc(collectionRef, documentObject);
+        notifications.success('Customer Successfully Saved', 3000);
     } catch (e) {
         console.error("Error adding document: ", e);
+        notifications.danger('Error adding customer', 3000);
     }
 }
 

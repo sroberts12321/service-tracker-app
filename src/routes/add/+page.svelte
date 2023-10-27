@@ -38,15 +38,13 @@
 			notes: notes,
 			searchTerms: searchTerms
 		}
-		writeStore('customers', customer).then((returnedSomething) => {
-			 JSON.stringify(returnedSomething + ': returned from write store')
-		})
+		writeStore('customers', customer)
 		.catch((err) => {
-			console.error(err);
+			console.error(JSON.stringify(err) + ' : this is the error');
+			notifications.danger('Error adding to database', 3000);
 		})
 		.finally(() => {
 			clearCustomer();
-			notifications.success('Customer Successfully Saved', 3000);
 		});
 	}
 
