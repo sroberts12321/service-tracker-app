@@ -85,31 +85,58 @@ export const writeStore = async (key: string, value: any) => {
 }
 
 export const readStore = async (key: string): Promise<any | undefined> => {
-    const querySnapshot = await getDocs(collection(db, key));
-    return querySnapshot;
+    try {
+        const querySnapshot = await getDocs(collection(db, key));
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error reading database: ", e);
+        notifications.danger('Error pulling data', 3000);
+    }
 }
 
 export const readCustomerDetail = async(key: string): Promise<any | undefined> => {
     const customerRef = doc(db, 'customers', key);
     const q = query(servicesCollectionRef, where('customerId', '==', customerRef))
-    const querySnapshot = await getDocs(q);
-    return querySnapshot;
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error reading database: ", e);
+        notifications.danger('Error reading database', 3000);
+    }
 }
 
 export const writeServiceUpdate = async(serviceId: string, paid: boolean, pickedUp: boolean, pickUpDate: string): Promise<any | undefined> => {
     const serviceRef = doc(db, 'services', serviceId);
-    const querySnapshot = await setDoc(serviceRef, { paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate }, { merge: true });
-    return querySnapshot;
+    try {
+        const querySnapshot = await setDoc(serviceRef, { paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate }, { merge: true });
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error updating database: ", e);
+        notifications.danger('Error updating database', 3000);
+    }
 }
 
 export const writeCustomerUpdate = async(customerId: string, lastName: string, firstName: string, phone: string, email: string, balance: number, notes: string, nickname: string): Promise<any | undefined> => {
     const customerRef = doc(db, 'customers', customerId);
-    const querySnapshot = await setDoc(customerRef, { lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname }, { merge: true });
-    return querySnapshot;
+    try {
+        const querySnapshot = await setDoc(customerRef, { lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname }, { merge: true });
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error updating customer: ", e);
+        notifications.danger('Error updating customer', 3000);
+    }
+    
 }
 
 export const deleteCustomer = async(customerId: string): Promise<any | undefined> => {
     const customerRef = doc(db, 'customers', customerId);
-    const querySnapshot = await deleteDoc(customerRef);
-    return querySnapshot;
+    try {
+        const querySnapshot = await deleteDoc(customerRef);
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error deleting customer: ", e);
+        notifications.danger('Error deleting customer', 3000);
+    }
+    
 }
