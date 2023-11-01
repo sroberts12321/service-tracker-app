@@ -15,6 +15,7 @@
 
     import EditService from './EditService.svelte';
     import EditCustomer from './EditCustomer.svelte';
+	import AddServiceComponent from './AddServiceComponent.svelte';
 
 	// Stores
 	const modalStore = getModalStore();
@@ -93,6 +94,24 @@
 			modalComponentForm(settings, s);
 	}
 
+	async function handleAddNewService(meta: unknown) {
+		const customerInfo = {
+			customerId: customerData.customerInfo.id,
+			lastName: customerData.customerInfo.lastName,
+			firstName: customerData.customerInfo.firstName
+		}
+			const s: ModalComponent = { ref: AddServiceComponent };
+			const settings: ModalSettings = {
+				type: 'component',
+				component: s,
+				title: `New Service for ${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`,
+				body: `Customer Notes:`,
+				meta: customerInfo,
+				buttonTextCancel: 'Close',
+				response: (r) => console.log('response:', r)
+			};
+			modalComponentForm(settings, s);
+	}
 </script>
 
 <!-- @component creates a modal with a table of services for given customer object. -->
@@ -107,7 +126,8 @@
             <Table regionHead={tableHeader} source={tableData} interactive={true} on:selected={serviceCheckInHandler}/>
         </div>
 		<!-- prettier-ignore -->
-		<footer class="modal-footer {parent.regionFooter}">
+		<footer class="modal-footer {parent.regionFooter} flex justify-between">
+			<button class="btn btn-sm variant-filled-tertiary" on:click={handleAddNewService}>Add New Service</button>
 			<SlideToggle name="slider-label" class="w-48" bind:checked={isAllServices}>{isAllServices ? 'All Services' : 'Not Picked Up'}</SlideToggle>
 			<button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
 		</footer>

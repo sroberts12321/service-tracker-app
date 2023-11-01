@@ -1,11 +1,13 @@
 <script lang="ts">	
-	import { Autocomplete, InputChip, popup, type AutocompleteOption, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { Autocomplete, getModalStore, InputChip, popup, type AutocompleteOption, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { notifications } from '$lib/stores/notifications';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { readStore, writeStore } from '$lib/firebase';
 	import { overridable } from '$lib/stores/customer-store';
 	import Toast from "$lib/Toast.svelte";
+
+    export let parent: any;
 
 	let customerStore: any = [];
 	let customer: any = {};
@@ -55,7 +57,23 @@
 		iterateRefNum();
 	}
 
-	async function addNewService() {
+	const modalStore = getModalStore();
+	const serviceData = $modalStore[0].meta;
+
+    const serviceDetail = {
+        serviceId: serviceData.serviceId,
+        paid: serviceData.paid,
+        pickedUp: serviceData.pickedUp,
+		pickUpDate: (new Date()).toJSON().slice(0, 10),
+		referenceNum: serviceData.referenceNum,
+		notes: serviceData.notes,
+		customerId: serviceData.customerId,
+        lastName: serviceData.lastName,
+        firstName: serviceData.firstName,
+        customerName: `${serviceData.lastName}, ${serviceData.firstName}`
+    }
+
+	async function handleAddNewService() {
 		const uniqueId = crypto.randomUUID();
 		if (listOfRefNums.length > 0) {
 			referenceNum = listOfRefNums.join(', ');
@@ -63,7 +81,7 @@
 
 		let service: any = {
 			serviceId: uniqueId,
-			customerId: selectedCustomerId,	
+			customerId: serviceDetail.customerId,	
 			dropOffDate: dropOffDate,
 			paid: paid,
 			isReady: isReady,
@@ -136,32 +154,26 @@
 		target: 'popupAutocomplete',
 		placement: 'bottom',
 	}
+	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
+	const cHeader = 'text-2xl font-bold';
 
 </script>
 
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="container h-full mx-auto flex justify-center items-center">
-		<div class="space-y-5 mt-10">
-			<h1 class="h1">Add Service Order</h1>
-			<form id="orderForm">
+{#if $modalStore[0]}
+	<div class="modal-example-form {cBase}">
+		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
+		<article>{$modalStore[0].body ?? '(body missing)'}</article>
+		<form id="orderForm">
 				<div class="grid grid-cols-4">
 					<label class="label mt-5 mr-5 col-span-2">
 						<span class="h4">Customer</span>
 						<input
-							class="input autocomplete"
+							class="input"
 							type="search"
-							name="autocomplete-search"
-							bind:value={customerSelection}
+							bind:value={serviceDetail.customerName}
 							placeholder="Search..."
-							use:popup={popupSettings}
+                            disabled={true}
 						/>
-						<div data-popup="popupAutocomplete" class="max-h-20 overflow-y-scroll card w-72">
-							<Autocomplete
-								bind:input={customerSelection}
-								options={customerStore}
-								on:selection={onCustomerSelection}
-							/>
-						</div>
 					</label>
 					<!-- svelte-ignore a11y-label-has-associated-control -->
 					<label class="label mt-5 col-span-2">
@@ -200,10 +212,11 @@
 					</div>
 				</div>
 			</form>
-			<button disabled={!(referenceNum || (listOfRefNums.length > 0)) || !customerSelection || !dropOffDate} on:click={addNewService} type="button" class="btn variant-filled">
-				<span>Add</span>
-			</button>
-		</div>
+		<!-- prettier-ignore -->
+		<footer class="modal-footer {parent.regionFooter}">
+        <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancel</button>
+            <button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !serviceDetail.customerName || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
+    </footer>
 	</div>
-</div>
+{/if}
 <Toast />
