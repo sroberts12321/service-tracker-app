@@ -5,8 +5,21 @@
 	import type { PageData } from './$types';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
+	import { allServices, activeServices, customerInfo } from '$lib/stores/customer-store';
+	import type { Customer } from '$lib/customer';
 
 	export let data: PageData;
+
+	const initialCustomerInfoState: Customer = {
+		id: '',
+		lastName: '',
+		firstName: '',
+		nickname: '',
+		phone: '',
+		email: '',
+		balance: 0,
+		notes: ''
+	}
 
 	const modalStore = getModalStore();
 	let customerServiceObject: any = {
@@ -31,16 +44,20 @@
 		modalStore.trigger(settings);
 	}
 
-	async function handleCustomerSelect(customerObject: any) {
+	async function handleCustomerSelect(customerObject: Customer) {
 		console.log(JSON.stringify(customerObject) + " : customer obj");
 		const res = await readCustomerDetail(customerObject.id)
 		.then((returnedServices) => {
+			activeServices.set([]);
+			allServices.set([]);
+			customerInfo.set(initialCustomerInfoState);
 			customerServiceObject = {
 					"allServices": [],
 					"activeServices": [],
 					"customerInfo": customerObject
 				};
-			 returnedServices.forEach((doc: any) => {
+			customerInfo.set(customerObject);
+			returnedServices.forEach((doc: any) => {
 				let formattedDropOffDate = doc.get('dropOffDate');
 				let service: any = {
 					serviceId    : doc.id,
@@ -53,15 +70,12 @@
 					notes        : doc.get('notes')
 				}
 				if (service.pickedUp === false) {
+					activeServices.update(services => [...services, service]);
 					customerServiceObject.activeServices = [...customerServiceObject.activeServices, service]
 				}
+					allServices.update(services => [...services, service]);
 					customerServiceObject.allServices = [...customerServiceObject.allServices, service]
 			});
-		})
-		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
 			const c: ModalComponent = { ref: CustomerDetail };
 			const settings: ModalSettings = {
 				type: 'component',
@@ -74,7 +88,9 @@
 			};
 			modalComponentForm(settings, c);
 		})
-
+		.catch((err) => {
+			console.error(err);
+		});
 	}
 </script>
 

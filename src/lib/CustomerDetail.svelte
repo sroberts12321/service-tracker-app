@@ -16,10 +16,11 @@
     import EditService from './EditService.svelte';
     import EditCustomer from './EditCustomer.svelte';
 	import AddServiceComponent from './AddServiceComponent.svelte';
+	import { allServices, activeServices } from './stores/customer-store';
 
 	// Stores
 	const modalStore = getModalStore();
-    const customerData = $modalStore[0].meta;
+    let customerData = $modalStore[0].meta;
 	let isAllServices = false;
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
@@ -27,17 +28,30 @@
 		modalStore.close();
 	}
 
+    // const allServicesTableData: TableSource = {
+    //     head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
+    //     body: tableMapperValues(customerData.allServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
+    //     meta: tableMapperValues(customerData.allServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
+    // };
+
+    // const activeServicesTableData: TableSource = {
+    //     head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
+    //     body: tableMapperValues(customerData.activeServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
+    //     meta: tableMapperValues(customerData.activeServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
+    // };
+
     const allServicesTableData: TableSource = {
         head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
-        body: tableMapperValues(customerData.allServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
-        meta: tableMapperValues(customerData.allServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
+        body: tableMapperValues($allServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
+        meta: tableMapperValues($allServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
     };
 
     const activeServicesTableData: TableSource = {
         head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
-        body: tableMapperValues(customerData.activeServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
-        meta: tableMapperValues(customerData.activeServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
+        body: tableMapperValues($activeServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
+        meta: tableMapperValues($activeServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
     };
+
 
 	$: tableData = isAllServices ? allServicesTableData : activeServicesTableData;
 
@@ -57,38 +71,32 @@
 			referenceNum: meta.detail[4],
 			notes:meta.detail[5]
 		}
+		customerData = {
+			...customerData,
+			serviceDetail
+		};
 			const s: ModalComponent = { ref: EditService };
 			const settings: ModalSettings = {
 				type: 'component',
 				component: s,
 				title: `Order #${meta.detail[4]}`,
 				body: `Order Notes: \n ${meta.detail[5]}`,
-				meta: serviceDetail,
+				meta: customerData,
 				buttonTextCancel: 'Close',
 				response: (r) => console.log('response:', r)
 			};
 			modalComponentForm(settings, s);
     }
 
-	async function handleEditCustomer(meta: unknown) {
-		const customerInfo = {
-			customerId: customerData.customerInfo.id,
-			lastName: customerData.customerInfo.lastName,
-			firstName: customerData.customerInfo.firstName,
-			phone: customerData.customerInfo.phone,
-			email: customerData.customerInfo.email,
-			balance: customerData.customerInfo.balance,
-			notes: customerData.customerInfo.notes,
-			nickname: customerData.customerInfo.nickname
-		}
+	async function handleEditCustomer() {	
 			const s: ModalComponent = { ref: EditCustomer };
 			const settings: ModalSettings = {
 				type: 'component',
 				component: s,
 				title: `Customer Info`,
 				body: `Customer Notes:`,
-				meta: customerInfo,
-				buttonTextCancel: 'Close',
+				meta: customerData.customerInfo,
+				buttonTextCancel: 'Back',
 				response: (r) => console.log('response:', r)
 			};
 			modalComponentForm(settings, s);
@@ -96,7 +104,7 @@
 
 	async function handleAddNewService(meta: unknown) {
 		const customerInfo = {
-			customerId: customerData.customerInfo.id,
+			id: customerData.customerInfo.id,
 			lastName: customerData.customerInfo.lastName,
 			firstName: customerData.customerInfo.firstName
 		}
@@ -107,7 +115,7 @@
 				title: `New Service for ${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`,
 				body: `Customer Notes:`,
 				meta: customerInfo,
-				buttonTextCancel: 'Close',
+				buttonTextCancel: 'Back',
 				response: (r) => console.log('response:', r)
 			};
 			modalComponentForm(settings, s);

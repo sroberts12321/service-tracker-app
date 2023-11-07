@@ -1,23 +1,44 @@
 <script lang="ts">
-	// Props
-	/** Exposes parent props to this component. */
 	export let parent: any;
-
-	// Stores
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import { onMount } from 'svelte';
+	import { getModalStore, type ModalSettings, type ModalComponent  } from '@skeletonlabs/skeleton';
 	import { writeServiceUpdate } from './firebase';
+	import CustomerDetail from './CustomerDetail.svelte';
+	import { onMount } from 'svelte';
+
 	const modalStore = getModalStore();
-	const serviceData = $modalStore[0].meta;
+	const customerData = $modalStore[0].meta;
+
+	onMount(async () => {
+		console.log(`${JSON.stringify(customerData.serviceDetail)} : customer`)
+	})
 
     const serviceDetail = {
-        serviceId: serviceData.serviceId,
-        paid: serviceData.paid,
-        pickedUp: serviceData.pickedUp,
+        serviceId: customerData.serviceDetail.serviceId,
+        paid: customerData.serviceDetail.paid,
+        pickedUp: customerData.serviceDetail.pickedUp,
 		pickUpDate: (new Date()).toJSON().slice(0, 10),
-		referenceNum: serviceData.referenceNum,
-		notes: serviceData.notes
+		referenceNum: customerData.serviceDetail.referenceNum,
+		notes: customerData.serviceDetail.notes 
     }
+
+	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
+		modalStore.trigger(settings);
+		modalStore.close();
+	}
+
+	async function handleReturnToCustomerDetail(meta: unknown) {
+		const c: ModalComponent = { ref: CustomerDetail };
+			const settings: ModalSettings = {
+				type: 'component',
+				component: c,
+				title: `${customerData.customerInfo.firstName} ${customerData.customerInfo.lastName}`,
+				body: `Account Notes: \n${customerData.customerInfo.notes}`,
+				meta: customerData,
+				buttonTextCancel: 'Close',
+				response: (r) => console.log('response:', r)
+			};
+			modalComponentForm(settings, c);
+		}
 
 	// Base Classes
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
@@ -28,9 +49,10 @@
 	async function editService() {
 		writeServiceUpdate(serviceDetail.serviceId, serviceDetail.paid, serviceDetail.pickedUp, serviceDetail.pickUpDate).then((returnedInfo) => {
 			JSON.stringify(returnedInfo);
+			handleReturnToCustomerDetail(customerData);
 		}).catch((err) => {
 			console.error(err);
-		}).finally(() => {modalStore.close()});
+		});
 	}
 </script>
 
