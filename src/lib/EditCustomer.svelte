@@ -11,6 +11,7 @@
 	import { customerInfo } from './stores/customer-store';
 	import { onMount } from 'svelte';
 	const modalStore = getModalStore();
+	let customerData = $modalStore[0].meta;
 
 	let customerDetail: Customer;
 	let initialState: Customer;
@@ -51,7 +52,7 @@
 			customerInfo.set(customerDetail);
 		}).catch((err) => {
 			console.error(err);
-		}).finally(() => {handleReturnToCustomerDetail()});
+		}).finally(() => {handleReturnToCustomerDetail(true)});
 	}
 
 	const confirmModal: ModalSettings = {
@@ -71,8 +72,20 @@
 	}	
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
-		modalStore.trigger(settings);
 		modalStore.close();
+		modalStore.trigger(settings);
+	}
+
+	function resetInitialCustomerState() {
+		customerInfo.set(initialState);
+		customerData.customerInfo.id = initialState.id;
+		customerData.customerInfo.lastName = initialState.lastName; 
+		customerData.customerInfo.firstName = initialState.firstName;
+		customerData.customerInfo.phone = initialState.phone;
+		customerData.customerInfo.email = initialState.email;
+		customerData.customerInfo.balance = initialState.balance;
+		customerData.customerInfo.notes = initialState.notes;
+		customerData.customerInfo.nickname = initialState.nickname;
 	}
 
 	async function handleChangeCustomerDataConfirm() {
@@ -85,30 +98,32 @@
 					if (r) {
 						handleEditCustomer();
 					} else {
-						customerInfo.set(initialState);
-						handleReturnToCustomerDetail();
+						resetInitialCustomerState();
+						handleReturnToCustomerDetail(false);
 					}	
 				},
 			}
 			modalStore.close();
 			modalStore.trigger(confirmSaveModal);
 		} else {
-			handleReturnToCustomerDetail();
+			handleReturnToCustomerDetail(true);
 		}
 	}	
 
-	function handleReturnToCustomerDetail() {
+	function handleReturnToCustomerDetail(closeModal: boolean) {
 		const c: ModalComponent = { ref: CustomerDetail };
 		const settings: ModalSettings = {
 			type: 'component',
 			component: c,
 			title: `${customerDetail.firstName} ${customerDetail.lastName}`,
 			body: `Account Notes: \n${customerDetail.notes}`,
-			meta: customerDetail,
+			meta: customerData,
 			buttonTextCancel: 'Close',
 			response: (r) => console.log('response:', r)
 		};
-		modalStore.close();
+		if (closeModal) {
+			modalStore.close();
+		}
 		modalStore.trigger(settings);
 	}
 

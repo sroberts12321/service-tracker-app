@@ -18,7 +18,8 @@
 		phone: '',
 		email: '',
 		balance: 0,
-		notes: ''
+		notes: '',
+		searchTerms: ''
 	}
 
 	const modalStore = getModalStore();
@@ -45,7 +46,6 @@
 	}
 
 	async function handleCustomerSelect(customerObject: Customer) {
-		console.log(JSON.stringify(customerObject) + " : customer obj");
 		const res = await readCustomerDetail(customerObject.id)
 		.then((returnedServices) => {
 			activeServices.set([]);

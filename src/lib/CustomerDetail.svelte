@@ -16,29 +16,39 @@
     import EditService from './EditService.svelte';
     import EditCustomer from './EditCustomer.svelte';
 	import AddServiceComponent from './AddServiceComponent.svelte';
-	import { allServices, activeServices } from './stores/customer-store';
+	import { allServices, activeServices, customerInfo } from './stores/customer-store';
+	import type { Customer } from './customer';
+	import { onMount } from 'svelte';
 
 	// Stores
 	const modalStore = getModalStore();
-    let customerData = $modalStore[0].meta;
+	let customerData = $modalStore[0].meta;
 	let isAllServices = false;
+
+	let customerDetail: Customer;
+	let initialState: Customer;
+	customerInfo.subscribe((data) => {
+		customerDetail = data;
+	})
+
+	onMount(() => {
+		initialState = {
+			id: customerDetail.id,
+			lastName: customerDetail.lastName, 
+			firstName: customerDetail.firstName, 
+			nickname: customerDetail.nickname,
+			phone: customerDetail.phone, 
+			email: customerDetail.email, 
+			balance: customerDetail.balance, 
+			notes: customerDetail.notes,
+			searchTerms: customerDetail.searchTerms
+		}
+	})	
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
 		modalStore.trigger(settings);
 		modalStore.close();
 	}
-
-    // const allServicesTableData: TableSource = {
-    //     head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
-    //     body: tableMapperValues(customerData.allServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
-    //     meta: tableMapperValues(customerData.allServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
-    // };
-
-    // const activeServicesTableData: TableSource = {
-    //     head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
-    //     body: tableMapperValues(customerData.activeServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
-    //     meta: tableMapperValues(customerData.activeServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
-    // };
 
     const allServicesTableData: TableSource = {
         head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
@@ -51,7 +61,6 @@
         body: tableMapperValues($activeServices, ['referenceNum', 'typeOfService', 'dropOffDate', 'paid', 'pickUpDate']),
         meta: tableMapperValues($activeServices, ['serviceId', 'paid', 'pickedUp', 'pickUpDate', 'referenceNum', 'notes']),
     };
-
 
 	$: tableData = isAllServices ? allServicesTableData : activeServicesTableData;
 
@@ -95,7 +104,7 @@
 				component: s,
 				title: `Customer Info`,
 				body: `Customer Notes:`,
-				meta: customerData.customerInfo,
+				meta: customerData,
 				buttonTextCancel: 'Back',
 				response: (r) => console.log('response:', r)
 			};
@@ -113,7 +122,7 @@
 				type: 'component',
 				component: s,
 				title: `New Service for ${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`,
-				body: `Customer Notes:`,
+				body: `Customer Notes: ${customerData.customerInfo.notes}`,
 				meta: customerInfo,
 				buttonTextCancel: 'Back',
 				response: (r) => console.log('response:', r)
