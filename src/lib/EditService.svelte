@@ -9,7 +9,7 @@
 	const customerData = $modalStore[0].meta;
 
 	onMount(async () => {
-		console.log(`${JSON.stringify(customerData.serviceDetail)} : customer`)
+		// console.log(`${JSON.stringify(customerData.serviceDetail)} : customer`)
 	})
 
     const serviceDetail = {

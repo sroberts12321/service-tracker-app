@@ -123,7 +123,7 @@
 				component: s,
 				title: `New Service for ${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`,
 				body: `Customer Notes: ${customerData.customerInfo.notes}`,
-				meta: customerInfo,
+				meta: customerData,
 				buttonTextCancel: 'Back',
 				response: (r) => console.log('response:', r)
 			};

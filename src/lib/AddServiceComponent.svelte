@@ -1,8 +1,11 @@
 <script lang="ts">	
-	import { getModalStore, InputChip } from '@skeletonlabs/skeleton';
+	import { getModalStore, InputChip, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	import CustomerDetail from './CustomerDetail.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { writeStore } from '$lib/firebase';
 	import Toast from "$lib/Toast.svelte";
+	import type { Service } from '$lib/service';
+	import { allServices, activeServices } from './stores/customer-store';
 
     export let parent: any;
 	
@@ -12,6 +15,7 @@
 	let pickedUp = false;
 	let isReady = false;
 	let notes = '';
+	let serviceId = '';
 	let referenceNum: string;
 	let lastEnteredRefNum: string;
 	let listOfRefNums: string[] = [];
@@ -22,20 +26,37 @@
 	}
 
 	const modalStore = getModalStore();
-	const serviceData = $modalStore[0].meta;
+	const customerData = $modalStore[0].meta;
 
     const serviceDetail = {
-        serviceId: serviceData.serviceId,
-        paid: serviceData.paid,
-        pickedUp: serviceData.pickedUp,
-		pickUpDate: (new Date()).toJSON().slice(0, 10),
-		referenceNum: serviceData.referenceNum,
-		notes: serviceData.notes,
-		customerId: serviceData.customerId,
-        lastName: serviceData.lastName,
-        firstName: serviceData.firstName,
-        customerName: `${serviceData.lastName}, ${serviceData.firstName}`
+        serviceId: serviceId,
+        paid: paid,
+        pickedUp: pickedUp,
+		dropOffDate: (new Date()).toJSON().slice(0, 10),
+		referenceNum: '',
+		notes: notes,
+		customerId: customerData.customerInfo.id,
+        lastName: customerData.customerInfo.lastName,
+        firstName: customerData.customerInfo.firstName,
+        customerName: `${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`
     }
+
+	function handleReturnToCustomerDetail(closeModal: boolean) {
+		const c: ModalComponent = { ref: CustomerDetail };
+		const settings: ModalSettings = {
+			type: 'component',
+			component: c,
+			title: `${customerData.customerInfo.firstName} ${customerData.customerInfo.lastName}`,
+			body: `Account Notes: \n${customerData.customerInfo.notes}`,
+			meta: customerData,
+			buttonTextCancel: 'Close',
+			response: (r) => console.log('response:', r)
+		};
+		if (closeModal) {
+			modalStore.close();
+		}
+		modalStore.trigger(settings);
+	}
 
 	async function handleAddNewService() {
 		const uniqueId = crypto.randomUUID();
@@ -43,21 +64,25 @@
 			referenceNum = listOfRefNums.join(', ');
 		}
 
-		let service: any = {
-			serviceId: uniqueId,
+		let service: Service = {
 			customerId: serviceDetail.customerId,	
+			id: uniqueId,
 			dropOffDate: dropOffDate,
 			paid: paid,
-			isReady: isReady,
-			pickUpDate: pickUpDate,
 			pickedUp: pickedUp,
+			pickUpDate: pickUpDate,
+			isReady: isReady,
 			referenceNum: referenceNum,
 			typeOfService: typeOfService,
 			notes: notes,
 		}
 
 		writeStore('services', service).then((returnedSomething) => {
-			 JSON.stringify(returnedSomething + ': returned from write store')
+			activeServices.update(services => [...services, service]);
+			customerData.activeServices = [...customerData.activeServices, service]
+			allServices.update(services => [...services, service]);
+			customerData.allServices = [...customerData.allServices, service]
+			handleReturnToCustomerDetail(true);
 		})
 		.catch((err) => {
 			console.error(err);

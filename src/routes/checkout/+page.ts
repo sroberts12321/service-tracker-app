@@ -46,7 +46,7 @@ export const load = (async () => {
 			console.error(err);
 		})
 		.finally(() => {
-			console.log('customer fetching successful');
+			console.log('service fetching successful');
 		})
 		return servicesStore;
 	}
