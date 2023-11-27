@@ -1,31 +1,37 @@
 export class Service {
+    customerId: string;
     id: string;
     dropOffDate: string;
     paid: boolean;
     pickedUp: boolean;
     pickUpDate: string;
-    referenceNum: number;
+    isReady: boolean;
+    referenceNum: string;
     typeOfService: string;
-    searchTerms: string;
+    notes: string;
 
     constructor
     (
+        customerId: string,
         id: string, 
         dropOffDate: string, 
         paid: boolean, 
         pickedUp: boolean, 
         pickUpDate: string, 
-        referenceNum: number, 
+        isReady: boolean, 
+        referenceNum: string, 
         typeOfService: string, 
-        searchTerms: string
+        notes: string
     ) {
+        this.customerId = customerId;
         this.id = id;
         this.dropOffDate = dropOffDate;
         this.paid = paid;
         this.pickedUp = pickedUp;
         this.pickUpDate = pickUpDate;
+        this.isReady = isReady;
         this.referenceNum = referenceNum;
         this.typeOfService = typeOfService;
-        this.searchTerms = searchTerms;
+        this.notes = notes;
     }
 }
