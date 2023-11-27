@@ -134,7 +134,7 @@
 {#if $modalStore[0]}
 	<div class="modal-example-form {cBase}">
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
-		<article>{$modalStore[0].body ?? '(body missing)'}</article>
+		<article>{`Account Notes: ${customerDetail.notes}` ?? '(body missing)'}</article>
 		<form id="orderForm">
 			<div class="grid grid-cols-2">
 				<label class="label mt-5 mr-5">

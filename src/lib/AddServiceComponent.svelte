@@ -3,6 +3,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { writeStore } from '$lib/firebase';
 	import Toast from "$lib/Toast.svelte";
+	import { onMount } from 'svelte';
 
     export let parent: any;
 	
@@ -24,19 +25,6 @@
 	const modalStore = getModalStore();
 	const serviceData = $modalStore[0].meta;
 
-    const serviceDetail = {
-        serviceId: serviceData.serviceId,
-        paid: serviceData.paid,
-        pickedUp: serviceData.pickedUp,
-		pickUpDate: (new Date()).toJSON().slice(0, 10),
-		referenceNum: serviceData.referenceNum,
-		notes: serviceData.notes,
-		customerId: serviceData.customerId,
-        lastName: serviceData.lastName,
-        firstName: serviceData.firstName,
-        customerName: `${serviceData.lastName}, ${serviceData.firstName}`
-    }
-
 	async function handleAddNewService() {
 		const uniqueId = crypto.randomUUID();
 		if (listOfRefNums.length > 0) {
@@ -45,7 +33,7 @@
 
 		let service: any = {
 			serviceId: uniqueId,
-			customerId: serviceDetail.customerId,	
+			customerId: serviceData.customerInfo.id,	
 			dropOffDate: dropOffDate,
 			paid: paid,
 			isReady: isReady,
@@ -122,7 +110,7 @@
 						<input
 							class="input"
 							type="search"
-							bind:value={serviceDetail.customerName}
+							bind:value={serviceData.customerInfo.customerName}
 							placeholder="Search..."
                             disabled={true}
 						/>
@@ -167,7 +155,7 @@
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">
         <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancel</button>
-            <button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !serviceDetail.customerName || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
+            <button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
     </footer>
 	</div>
 {/if}

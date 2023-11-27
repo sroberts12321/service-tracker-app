@@ -68,6 +68,18 @@
 	const cHeader = 'text-2xl font-bold';
     const tableHeader = 'sticky top-0';
 
+	function resetInitialCustomerState() {
+		customerInfo.set(initialState);
+		customerData.customerInfo.id = initialState.id;
+		customerData.customerInfo.lastName = initialState.lastName; 
+		customerData.customerInfo.firstName = initialState.firstName;
+		customerData.customerInfo.phone = initialState.phone;
+		customerData.customerInfo.email = initialState.email;
+		customerData.customerInfo.balance = initialState.balance;
+		customerData.customerInfo.notes = initialState.notes;
+		customerData.customerInfo.nickname = initialState.nickname;
+	}
+
     async function serviceCheckInHandler(meta: unknown) {
 		if (meta.detail[5] === undefined) {
 			meta.detail[5] = ' ';
@@ -102,11 +114,17 @@
 			const settings: ModalSettings = {
 				type: 'component',
 				component: s,
-				title: `Customer Info`,
-				body: `Customer Notes:`,
+				title: `${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`,
+				body: `Customer Notes: ${customerData.customerInfo.notes}`,
 				meta: customerData,
 				buttonTextCancel: 'Back',
-				response: (r) => console.log('response:', r)
+				response: (r: boolean) => {
+					if (r) {
+						console.log(r + " : response");
+					} else {
+						resetInitialCustomerState();
+					}
+				}
 			};
 			modalComponentForm(settings, s);
 	}
@@ -123,7 +141,7 @@
 				component: s,
 				title: `New Service for ${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`,
 				body: `Customer Notes: ${customerData.customerInfo.notes}`,
-				meta: customerInfo,
+				meta: customerData,
 				buttonTextCancel: 'Back',
 				response: (r) => console.log('response:', r)
 			};

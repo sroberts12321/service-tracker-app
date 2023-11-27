@@ -80,7 +80,7 @@
 			const settings: ModalSettings = {
 				type: 'component',
 				component: c,
-				title: `${customerObject.firstName} ${customerObject.lastName}`,
+				title: `${customerObject.lastName}, ${customerObject.firstName}`,
 				body: `Account Notes: \n${customerObject.notes}`,
 				meta: customerServiceObject,
 				buttonTextCancel: 'Close',
