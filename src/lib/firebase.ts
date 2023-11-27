@@ -46,8 +46,10 @@ let collectionRef: CollectionReference;
 
 export const writeStore = async (key: string, value: any) => {
 
+    let successMsg: String = "";
     let documentObject = {};
     if (key == 'services') {
+        successMsg = "Service Successfully Saved";
         collectionRef = servicesCollectionRef;
         const customerRef = doc(db, 'customers', value.customerId);
         documentObject = {
@@ -61,6 +63,7 @@ export const writeStore = async (key: string, value: any) => {
             notes: value.notes
         }
     } else if (key == 'customers') {
+        successMsg = "Customer Successfully Saved";
         collectionRef = customerCollectionRef;
         documentObject = {
 			id: value.id,
@@ -77,7 +80,7 @@ export const writeStore = async (key: string, value: any) => {
 
     try {
         const docRef = await addDoc(collectionRef, documentObject);
-        notifications.success('Customer Successfully Saved', 3000);
+        notifications.success(successMsg, 2000);
     } catch (e) {
         console.error("Error adding document: ", e);
         notifications.danger('Error adding customer', 3000);
