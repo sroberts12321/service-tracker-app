@@ -4,6 +4,7 @@
 	import { writeServiceUpdate } from './firebase';
 	import CustomerDetail from './CustomerDetail.svelte';
 	import { onMount } from 'svelte';
+	import { allServices, activeServices, customerInfo } from './stores/customer-store';
 
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
@@ -47,8 +48,9 @@
     const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token'; 
 
 	async function editService() {
-		writeServiceUpdate(serviceDetail.serviceId, serviceDetail.paid, serviceDetail.pickedUp, serviceDetail.pickUpDate).then((returnedInfo) => {
-			JSON.stringify(returnedInfo);
+		writeServiceUpdate(serviceDetail.serviceId, serviceDetail.paid, serviceDetail.pickedUp, serviceDetail.pickUpDate)
+		.then((returnedInfo) => {
+			activeServices.update(services => services.filter((service) => service.serviceId  !== serviceDetail.serviceId));
 			handleReturnToCustomerDetail(customerData);
 		}).catch((err) => {
 			console.error(err);
