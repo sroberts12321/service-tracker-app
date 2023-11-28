@@ -61,10 +61,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 720,
         "resizable": true,
         "title": "BTT Alterations & Cleaners",
-        "width": 800
+        "width": 1280
       }
     ]
   }
