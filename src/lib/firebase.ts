@@ -89,7 +89,8 @@ export const writeStore = async (key: string, value: any) => {
 
 export const readStore = async (key: string): Promise<any | undefined> => {
     try {
-        const querySnapshot = await getDocs(collection(db, key));
+        const q = query(collection(db, key), orderBy("lastName"));
+        const querySnapshot = await getDocs(q);
         return querySnapshot;
     } catch (e) {
         console.error("Error reading database: ", e);
