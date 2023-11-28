@@ -28,6 +28,7 @@
 
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
+	let customerName = `${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`;
 
     const serviceDetail = {
         serviceId: serviceId,
@@ -148,7 +149,7 @@
 						<input
 							class="input"
 							type="search"
-							bind:value={customerData.customerInfo.customerName}
+							bind:value={customerName}
 							placeholder="Search..."
                             disabled={true}
 						/>
@@ -192,7 +193,7 @@
 			</form>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancel</button>
+        <button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}>Back</button>
             <button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
     </footer>
 	</div>
