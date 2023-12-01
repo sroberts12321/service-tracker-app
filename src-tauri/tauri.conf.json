@@ -34,7 +34,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.servicetrackerapp.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -61,10 +61,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 720,
+        "height": 600,
         "resizable": true,
         "title": "BTT Alterations & Cleaners",
-        "width": 1280
+        "width": 800
       }
     ]
   }

@@ -155,8 +155,8 @@
 </svelte:head>
 
 <div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-5 mt-10 mb-10">
-		<h1 class="h1">Find Customer</h1>
+	<div>
+		<h3 class="h2 text-primary-500">Find Customer</h3>
 		<form id="searchForm">
 			<label class="label mt-5">
 				<span>Last Name</span>
