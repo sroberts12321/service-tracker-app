@@ -1,7 +1,6 @@
 <script lang="ts">	
 	import { getModalStore, InputChip, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import CustomerDetail from './CustomerDetail.svelte';
-	import { notifications } from '$lib/stores/notifications';
 	import { writeStore } from '$lib/firebase';
 	import Toast from "$lib/Toast.svelte";
 	import { allServices, activeServices } from './stores/customer-store';

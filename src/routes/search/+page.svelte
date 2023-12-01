@@ -4,7 +4,7 @@
 	import { readCustomerDetail, readStore } from '$lib/firebase';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
-	import { allServices, activeServices, customerInfo, allCustomers } from '$lib/stores/customer-store';
+	import { allServices, activeServices, customerInfo } from '$lib/stores/customer-store';
 	import type { Customer } from '$lib/customer';
 	import Toast from "$lib/Toast.svelte";
 
@@ -57,7 +57,6 @@
 			console.error(err);
 		})
 		.finally(() => {
-			console.log(JSON.stringify(customerStore) + ' here?');
 			console.log('customer fetching successful');
 			})
 		return customerStore;

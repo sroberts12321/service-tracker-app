@@ -1,6 +1,5 @@
 <script lang="ts">	
 	import { Autocomplete, InputChip, popup, type AutocompleteOption, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { notifications } from '$lib/stores/notifications';
 	import { onMount } from 'svelte';
 	import { readStore, writeStore } from '$lib/firebase';
 	import Toast from "$lib/Toast.svelte";
