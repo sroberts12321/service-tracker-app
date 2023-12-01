@@ -10,9 +10,6 @@
 	let customerStore: any = [];
 	let customer: any = {};
 
-	// const referenceNum = writable(localStorage.getItem("numStore") || "");
-	// referenceNum.subscribe(val => localStorage.setItem("numStore", val));
-
 	onMount(async () => {
 		const res = await readStore('customers')
 		.then((returnedCustomers) => {
@@ -40,7 +37,7 @@
 
 	let customerSelection = '';
 	let selectedCustomerId = '';
-	let dropOffDate = (new Date()).toJSON().slice(0, 10);
+	$: dropOffDate = convertDate((new Date()).toLocaleDateString());
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
@@ -54,6 +51,21 @@
 	$: if (listOfRefNums.length > 0) {
 		iterateRefNum();
 	}
+	function convertDate(dateStr: string) {
+		let year = dateStr.slice(6,10);
+		let month = dateStr.slice(0,2);
+		let day = dateStr.slice(3,5);
+		let newDate = `${year}-${month}-${day}`;
+		return newDate;
+	}
+
+	function convertDateToRead(dateStr: string) {
+		let year = dateStr.slice(0,4);
+		let month = dateStr.slice(5,7);
+		let day = dateStr.slice(8,10);
+		let newDate = `${month}/${day}/${year}`;
+		return newDate;
+	}
 
 	async function addNewService() {
 		const uniqueId = crypto.randomUUID();
@@ -64,7 +76,7 @@
 		let service: any = {
 			serviceId: uniqueId,
 			customerId: selectedCustomerId,	
-			dropOffDate: dropOffDate,
+			dropOffDate: convertDateToRead(dropOffDate),
 			paid: paid,
 			isReady: isReady,
 			pickUpDate: pickUpDate,
@@ -96,7 +108,7 @@
 
 	function clearForm() {
     	customerSelection = '';
-    	dropOffDate = (new Date()).toJSON().slice(0, 10);
+    	dropOffDate = convertDate((new Date()).toLocaleDateString());
     	paid = false;
     	typeOfService = 'Cleaning';
 		notes = '';

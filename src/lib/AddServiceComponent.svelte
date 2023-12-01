@@ -10,7 +10,7 @@
 
     export let parent: any;
 	
-	let dropOffDate = (new Date()).toJSON().slice(0, 10);
+	$: dropOffDate = convertDate((new Date()).toLocaleDateString());
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
@@ -26,6 +26,22 @@
 		iterateRefNum();
 	}
 
+	function convertDate(dateStr: string) {
+		let year = dateStr.slice(6,10);
+		let month = dateStr.slice(0,2);
+		let day = dateStr.slice(3,5);
+		let newDate = `${year}-${month}-${day}`;
+		return newDate;
+	}
+
+	function convertDateToRead(dateStr: string) {
+		let year = dateStr.slice(0,4);
+		let month = dateStr.slice(5,7);
+		let day = dateStr.slice(8,10);
+		let newDate = `${month}/${day}/${year}`;
+		return newDate;
+	}
+
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
 	let customerName = `${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`;
@@ -34,7 +50,7 @@
         serviceId: serviceId,
         paid: paid,
         pickedUp: pickedUp,
-		dropOffDate: (new Date()).toJSON().slice(0, 10),
+		dropOffDate: dropOffDate,
 		referenceNum: '',
 		notes: notes,
 		customerId: customerData.customerInfo.id,
@@ -69,7 +85,7 @@
 		let service: any = {
 			serviceId: uniqueId,
 			customerId: customerData.customerInfo.id,	
-			dropOffDate: dropOffDate,
+			dropOffDate: convertDateToRead(dropOffDate),
 			paid: paid,
 			pickedUp: pickedUp,
 			pickUpDate: pickUpDate,
@@ -84,7 +100,7 @@
 			customerData.activeServices = [...customerData.activeServices, service]
 			allServices.update(services => [...services, service]);
 			customerData.allServices = [...customerData.allServices, service]
-			handleReturnToCustomerDetail(true);
+			modalStore.close();
 		})
 		.catch((err) => {
 			console.error(err);
