@@ -4,13 +4,11 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { writeStore } from '$lib/firebase';
 	import Toast from "$lib/Toast.svelte";
-	import { onMount } from 'svelte';
-	import type { Service } from '$lib/service';
 	import { allServices, activeServices } from './stores/customer-store';
 
     export let parent: any;
 	
-	$: dropOffDate = convertDate((new Date()).toLocaleDateString());
+	$: dropOffDate = convertDate((new Date()).toLocaleDateString(), "initial");
 	let paid = false;
 	let pickUpDate  = '';
 	let pickedUp = false;
@@ -26,21 +24,41 @@
 		iterateRefNum();
 	}
 
-	function convertDate(dateStr: string) {
-		let year = dateStr.slice(6,10);
-		let month = dateStr.slice(0,2);
-		let day = dateStr.slice(3,5);
-		let newDate = `${year}-${month}-${day}`;
-		return newDate;
-	}
+	function convertDate(dateStr: string, dateType: string) {
+		let newDateList;
+		let month;
+		let day; 
+		let year;
+		let newDate;
 
-	function convertDateToRead(dateStr: string) {
-		let year = dateStr.slice(0,4);
-		let month = dateStr.slice(5,7);
-		let day = dateStr.slice(8,10);
-		let newDate = `${month}/${day}/${year}`;
+		if (dateType === "initial") {
+			newDateList = dateStr.split('/');
+			month = newDateList[0];
+			day = newDateList[1];
+			year = newDateList[2];
+		} else {
+			newDateList = dateStr.split('-');
+			month = newDateList[1];
+			day = newDateList[2];
+			year = newDateList[0];
+		}
+
+		if (month.length < 2) {
+			month = `0${month}`;
+		}
+
+		if (day.length < 2) {
+			day = `0${day}`;
+		}
+
+		if (dateType === "initial") {
+			newDate = `${year}-${month}-${day}`;
+		} else {
+			newDate = `${month}/${day}/${year}`;
+		}
+
 		return newDate;
-	}
+	}	
 
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
@@ -85,7 +103,7 @@
 		let service: any = {
 			serviceId: uniqueId,
 			customerId: customerData.customerInfo.id,	
-			dropOffDate: convertDateToRead(dropOffDate),
+			dropOffDate: convertDate(dropOffDate, "database"),
 			paid: paid,
 			pickedUp: pickedUp,
 			pickUpDate: pickUpDate,
@@ -107,7 +125,6 @@
 		})
 		.finally(() => {
 			clearForm();
-			notifications.success('Service Successfully Saved', 3000);
 		});
 	}
 
