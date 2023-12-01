@@ -1,14 +1,66 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { createSearchStore, searchHandler } from '$lib/stores/search';
-	import { readCustomerDetail } from '$lib/firebase';
-	import type { PageData } from './$types';
+	import { readCustomerDetail, readStore } from '$lib/firebase';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
-	import { allServices, activeServices, customerInfo } from '$lib/stores/customer-store';
+	import { allServices, activeServices, customerInfo, allCustomers } from '$lib/stores/customer-store';
 	import type { Customer } from '$lib/customer';
 
-	export let data: PageData;
+	let customerStore: any = [];
+
+	let id = '';
+	let lastName = '';
+	let firstName = '';
+	let nickname = '';
+	let phone = '';
+	let email  = '';
+	let balance = 0;
+	let notes = '';
+	let searchTerms = '';
+	let customer: Customer = {
+		id,
+		lastName,
+		firstName,
+		nickname,
+		phone,
+		email,
+		balance,
+		notes,
+		searchTerms
+	};
+
+	onMount(async () => {
+		const res = await readStore('customers')
+		.then((returnedCustomers) => {
+			customerStore = [];
+			 returnedCustomers.forEach((doc) => {
+				customer = {
+					id: doc.id,
+					lastName: doc.get('lastName'),
+					firstName: doc.get('firstName'),
+					nickname: doc.get('nickname'),
+					phone: doc.get('phone'),
+					email: doc.get('email'),
+                    balance: doc.get('balance'),
+					notes: doc.get('notes'),
+					searchTerms: doc.get('searchTerms')
+				}
+				if (customer.notes === undefined) {
+					customer.notes = ' ';
+				}
+				customerStore = [...customerStore, customer];
+			});
+		})
+		.catch((err) => {
+			console.error(err);
+		})
+		.finally(() => {
+			console.log(JSON.stringify(customerStore) + ' here?');
+			console.log('customer fetching successful');
+			})
+		return customerStore;
+	})
 
 	const initialCustomerInfoState: Customer = {
 		id: '',
@@ -28,18 +80,21 @@
 		"activeServices": []
 	};
 
+	let searchStore = createSearchStore([]);
 
-	const searchCustomers = data.customers.map((customer) => ({
-		...customer,
-		searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email} ${customer.nickname}`
-	}));
+	$: if (customerStore.length > 0) {
+		const searchCustomers = customerStore.map((customer) => ({
+			...customer,
+			searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email} ${customer.nickname}`
+		}));
+		searchStore = createSearchStore(searchCustomers);
+		const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 
-	const searchStore = createSearchStore(searchCustomers);
-	const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+		onDestroy(() => {
+			unsubscribe();
+		});
+	}
 
-	onDestroy(() => {
-		unsubscribe();
-	});
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
 		modalStore.trigger(settings);
