@@ -6,6 +6,7 @@
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
 	import { allServices, activeServices, customerInfo, allCustomers } from '$lib/stores/customer-store';
 	import type { Customer } from '$lib/customer';
+	import Toast from "$lib/Toast.svelte";
 
 	let customerStore: any = [];
 
@@ -184,3 +185,4 @@
 		{/if}
 	</div>
 </div>
+<Toast />

@@ -19,6 +19,7 @@
 	import { allServices, activeServices, customerInfo } from './stores/customer-store';
 	import type { Customer } from './customer';
 	import { onMount } from 'svelte';
+	import Toast from "$lib/Toast.svelte";
 
 	// Stores
 	const modalStore = getModalStore();
@@ -168,3 +169,4 @@
 		</footer>
 	</div>
 {/if}
+<Toast />
