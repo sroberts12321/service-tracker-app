@@ -70,29 +70,29 @@
 		<h3 class="h2 text-primary-500">Add Customer</h3>
 		<form id="orderForm">
 			<div class="grid grid-cols-2">
-				<label class="label mt-5 mr-5">
+				<label class="label mt-1 mr-5">
 					<span>Last Name</span>
 					<input bind:value={lastName} class="input" type="text" placeholder="" required/>
 				</label>
-				<label class="label mt-5">
+				<label class="label mt-1">
 					<span>First Name</span>
 					<input bind:value={firstName} class="input" type="text" placeholder="" required/>
 				</label>
-				<label class="label mt-5 mr-5">
+				<label class="label mt-1 mr-5">
 					<span>Phone #</span>
 					<input bind:value={phone} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5">
+				<label class="label mt-1">
 					<span>Email</span>
 					<input bind:value={email} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5 mr-5">
+				<label class="label mt-1 mr-5">
 					<span>Nickname</span>
 					<input bind:value={nickname} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5">
+				<label class="label mt-1">
 					<span>Notes: </span>
-					<textarea bind:value={notes} class="textarea" rows="4" placeholder="Notes for the customer" />
+					<textarea bind:value={notes} class="textarea" rows="2" placeholder="Notes for the customer" />
 				</label>
 			</div>
 		</form>
