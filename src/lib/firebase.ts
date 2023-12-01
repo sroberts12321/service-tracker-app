@@ -137,6 +137,7 @@ export const deleteCustomer = async(customerId: string): Promise<any | undefined
     const customerRef = doc(db, 'customers', customerId);
     try {
         const querySnapshot = await deleteDoc(customerRef);
+        notifications.success("Customer Deleted", 2000);
         return querySnapshot;
     } catch (e) {
         console.error("Error deleting customer: ", e);
