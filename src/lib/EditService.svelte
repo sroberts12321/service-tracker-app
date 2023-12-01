@@ -3,8 +3,7 @@
 	import { getModalStore, type ModalSettings, type ModalComponent  } from '@skeletonlabs/skeleton';
 	import { writeServiceUpdate } from './firebase';
 	import CustomerDetail from './CustomerDetail.svelte';
-	import { onMount } from 'svelte';
-	import { allServices, activeServices, customerInfo } from './stores/customer-store';
+	import { activeServices } from './stores/customer-store';
 
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
@@ -13,7 +12,7 @@
         serviceId: customerData.serviceDetail.serviceId,
         paid: customerData.serviceDetail.paid,
         pickedUp: customerData.serviceDetail.pickedUp,
-		pickUpDate: (new Date()).toJSON().slice(0, 10),
+		pickUpDate: convertDate((new Date()).toLocaleDateString(), "initial"),
 		referenceNum: customerData.serviceDetail.referenceNum,
 		notes: customerData.serviceDetail.notes 
     }
@@ -22,6 +21,42 @@
 		modalStore.trigger(settings);
 		modalStore.close();
 	}
+
+	function convertDate(dateStr: string, dateType: string) {
+		let newDateList;
+		let month;
+		let day; 
+		let year;
+		let newDate;
+
+		if (dateType === "initial") {
+			newDateList = dateStr.split('/');
+			month = newDateList[0];
+			day = newDateList[1];
+			year = newDateList[2];
+		} else {
+			newDateList = dateStr.split('-');
+			month = newDateList[1];
+			day = newDateList[2];
+			year = newDateList[0];
+		}
+
+		if (month.length < 2) {
+			month = `0${month}`;
+		}
+
+		if (day.length < 2) {
+			day = `0${day}`;
+		}
+
+		if (dateType === "initial") {
+			newDate = `${year}-${month}-${day}`;
+		} else {
+			newDate = `${month}/${day}/${year}`;
+		}
+
+		return newDate;
+	}	
 
 	async function handleReturnToCustomerDetail(meta: unknown) {
 		const c: ModalComponent = { ref: CustomerDetail };
@@ -44,7 +79,7 @@
     const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token'; 
 
 	async function editService() {
-		writeServiceUpdate(serviceDetail.serviceId, serviceDetail.paid, serviceDetail.pickedUp, serviceDetail.pickUpDate)
+		writeServiceUpdate(serviceDetail.serviceId, serviceDetail.paid, serviceDetail.pickedUp, convertDate(serviceDetail.pickUpDate, "database"))
 		.then((returnedInfo) => {
 			activeServices.update(services => services.filter((service) => service.serviceId  !== serviceDetail.serviceId));
 			handleReturnToCustomerDetail(customerData);
