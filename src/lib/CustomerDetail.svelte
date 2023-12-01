@@ -158,6 +158,11 @@
 			<button class="btn {parent.buttonNeutral}" on:click={handleEditCustomer}>Edit</button>
 		</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
+		{#if customerData.customerInfo.phone !== ''}
+		<div>
+			Phone: {customerData.customerInfo.phone}
+		</div>
+		{/if}
         <div class="max-h-96 overflow-y-scroll">
             <Table regionHead={tableHeader} source={tableData} interactive={true} on:selected={serviceCheckInHandler}/>
         </div>
