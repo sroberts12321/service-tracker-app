@@ -176,6 +176,11 @@
 				<div class="m-1">
 					<h3 class="h3">{customer.lastName}, {customer.firstName}</h3>
 				</div>
+				{#if customer.nickname != undefined && customer.nickname != ''}
+				<div class="m1">
+					<p>({customer.nickname})</p>
+				</div>
+				{/if}
 				<div class="m-1">
 					<button on:click={handleCustomerSelect(customer)} class="btn btn-sm variant-filled-tertiary h">SELECT</button>
 				</div>
