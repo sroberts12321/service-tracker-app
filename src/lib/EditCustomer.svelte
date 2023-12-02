@@ -137,37 +137,39 @@
 		<article>{`Account Notes: ${customerDetail.notes}` ?? '(body missing)'}</article>
 		<form id="orderForm">
 			<div class="grid grid-cols-2">
-				<label class="label mt-5 mr-5">
+				<label class="label mt-1 mr-5">
 					<span>Last Name</span>
 					<input disabled={true} bind:value={customerDetail.lastName} class="input" type="text" placeholder="" required/>
 				</label>
-				<label class="label mt-5">
+				<label class="label mt-1">
 					<span>First Name</span>
 					<input bind:value={customerDetail.firstName} class="input" type="text" placeholder="" required/>
 				</label>
-				<label class="label mt-5 mr-5">
+				<label class="label mt-1 mr-5">
 					<span>Phone #</span>
 					<input bind:value={customerDetail.phone} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5">
+				<label class="label mt-1">
 					<span>Email</span>
 					<input bind:value={customerDetail.email} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5 mr-5">
+				<label class="label mt-1 mr-5">
 					<span>Nickname</span>
 					<input bind:value={customerDetail.nickname} class="input" type="text" placeholder="" />
 				</label>
-				<label class="label mt-5">
+				<label class="label mt-1">
 					<span>Notes: </span>
-					<textarea bind:value={customerDetail.notes} class="textarea" rows="4" placeholder="Notes for the customer" />
+					<textarea bind:value={customerDetail.notes} class="textarea" rows="2" placeholder="Notes for the customer" />
 				</label>
 			</div>
 		</form>
 		<!-- prettier-ignore -->
-		<footer class="modal-footer {parent.regionFooter}">
+		<footer class="modal-footer {parent.regionFooter} flex justify-between">
 		<button class="btn variant-filled-error" type="button" on:click={confirmDelete}>Delete</button>
-        <button class="btn {parent.buttonNeutral}" on:click={handleChangeCustomerDataConfirm}>{parent.buttonTextCancel}</button>
-                <button class="btn {parent.buttonPositive}" on:click={handleEditCustomer}>Submit Change</button>
+		<div>
+			<button class="btn {parent.buttonNeutral}" on:click={handleChangeCustomerDataConfirm}>{parent.buttonTextCancel}</button>
+			<button class="btn {parent.buttonPositive}" on:click={handleEditCustomer}>Submit Change</button>
+		</div>
     </footer>
 	</div>
 {/if}
