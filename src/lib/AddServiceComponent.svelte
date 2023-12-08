@@ -98,6 +98,9 @@
 		if (listOfRefNums.length > 0) {
 			referenceNum = listOfRefNums.join(', ');
 		}
+		if (!customerData.customerInfo.documentId === undefined) {
+			customerData.customerInfo.id = customerData.customerInfo.documentId;
+		}
 
 		let service: any = {
 			serviceId: uniqueId,
@@ -113,9 +116,7 @@
 		}
 
 		writeStore('services', service).then((returnedSomething) => {
-			activeServices.update(services => [...services, service]);
 			customerData.activeServices = [...customerData.activeServices, service]
-			allServices.update(services => [...services, service]);
 			customerData.allServices = [...customerData.allServices, service]
 			modalStore.close();
 		})

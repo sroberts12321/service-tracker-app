@@ -1,16 +1,20 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
+	import { notifications } from '$lib/stores/notifications';
 	import { createSearchStore, searchHandler } from '$lib/stores/search';
 	import { readCustomerDetail, readStore } from '$lib/firebase';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent} from '@skeletonlabs/skeleton';
-	import { allServices, activeServices, customerInfo } from '$lib/stores/customer-store';
+	import { customerAutoSelectOptions, allServices, activeServices, allCustomers, customerInfo } from '$lib/stores/customer-store';
 	import type { Customer } from '$lib/customer';
 	import Toast from "$lib/Toast.svelte";
 
 	let customerStore: any = [];
+	customerStore = $allCustomers;
+	allCustomers.subscribe((newStore) => customerStore = newStore);
 
 	let id = '';
+	let documentId = '';
 	let lastName = '';
 	let firstName = '';
 	let nickname = '';
@@ -19,8 +23,10 @@
 	let balance = 0;
 	let notes = '';
 	let searchTerms = '';
+	let label = '';
 	let customer: Customer = {
 		id,
+		documentId,
 		lastName,
 		firstName,
 		nickname,
@@ -28,42 +34,66 @@
 		email,
 		balance,
 		notes,
-		searchTerms
-	};
+		searchTerms,
+		label
+	}	
+	let customerSelectLabel = '';
+	let customerSelectValue = '';
+	let customerSelectKeywords = '';;
+	let customerSelectionEntry: any = {
+		label: customerSelectLabel,
+		value: customerSelectValue,
+		keywords: customerSelectKeywords
+	}
 
 	onMount(async () => {
-		const res = await readStore('customers')
-		.then((returnedCustomers) => {
-			customerStore = [];
-			 returnedCustomers.forEach((doc) => {
-				customer = {
-					id: doc.id,
-					lastName: doc.get('lastName'),
-					firstName: doc.get('firstName'),
-					nickname: doc.get('nickname'),
-					phone: doc.get('phone'),
-					email: doc.get('email'),
-                    balance: doc.get('balance'),
-					notes: doc.get('notes'),
-					searchTerms: doc.get('searchTerms')
-				}
-				if (customer.notes === undefined) {
-					customer.notes = ' ';
-				}
-				customerStore = [...customerStore, customer];
-			});
-		})
-		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			console.log('customer fetching successful');
+		if (customerStore.length > 0) {
+			console.log("Data not updated");
+		} else {
+			console.log("Fetching Data");
+			const res = await readStore('customers')
+			.then((returnedCustomers) => {
+				customerStore = [];
+				allCustomers.set([]);
+				returnedCustomers.forEach((doc) => {
+					customer = {
+						id: doc.id,
+						documentId: doc.get('documentId'),
+						lastName: doc.get('lastName'),
+						firstName: doc.get('firstName'),
+						nickname: doc.get('nickname'),
+						phone: doc.get('phone'),
+						email: doc.get('email'),
+						balance: doc.get('balance'),
+						notes: doc.get('notes'),
+						searchTerms: doc.get('searchTerms'),
+						label: doc.get('lastName') + ", " + doc.get('firstName')
+					}
+					customerSelectionEntry = {
+						label: `${doc.get('lastName')}, ${doc.get('firstName')}`,
+						value: doc.id,
+						keywords: doc.get('searchTerms')
+					}
+					if (customer.notes === undefined) {
+						customer.notes = ' ';
+					}	
+					allCustomers.update(customers => [...customers, customer]);
+					customerAutoSelectOptions.update(customers => [...customers, customerSelectionEntry]);
+				});
 			})
-		return customerStore;
+			.catch((err) => {
+				console.error(err);
+				notifications.danger('Error Getting Customer Data', 3000);
+			})
+			console.log('customer fetching successful');
+			customerStore = $allCustomers;
+			return customerStore;
+		}
 	})
 
 	const initialCustomerInfoState: Customer = {
 		id: '',
+		documentId: '',
 		lastName: '',
 		firstName: '',
 		nickname: '',
@@ -71,7 +101,8 @@
 		email: '',
 		balance: 0,
 		notes: '',
-		searchTerms: ''
+		searchTerms: '',
+		label: ''
 	}
 
 	const modalStore = getModalStore();

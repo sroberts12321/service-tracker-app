@@ -61,5 +61,9 @@ export let serviceDetail = writable({});
 
 // List of all Customers
 export let allCustomers = writable([]);
+
+// List formatted for the autoselect options in the autocomplete field
+export let customerAutoSelectOptions = writable([]);
+
 // One of the many objects that exist in the allCustomers list
 export let customerInfo = writable<Customer>(initialCustomerInfoState);

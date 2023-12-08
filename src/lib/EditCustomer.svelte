@@ -8,7 +8,7 @@
 	import { writeCustomerUpdate, deleteCustomer } from './firebase';
 	import CustomerDetail from './CustomerDetail.svelte';
 	import type { Customer } from './customer';
-	import { customerInfo } from './stores/customer-store';
+	import { customerInfo, allCustomers } from './stores/customer-store';
 	import { onMount } from 'svelte';
 	const modalStore = getModalStore();
 	let customerData = $modalStore[0].meta;
@@ -29,7 +29,8 @@
 			email: customerDetail.email, 
 			balance: customerDetail.balance, 
 			notes: customerDetail.notes,
-			searchTerms: customerDetail.searchTerms
+			searchTerms: customerDetail.searchTerms,
+			label: `${customerDetail.lastName}, ${customerDetail.firstName}`
 		}
 	})	
 
@@ -46,7 +47,8 @@
 			customerDetail.email, 
 			customerDetail.balance, 
 			customerDetail.notes, 
-			customerDetail.nickname)
+			customerDetail.nickname,
+			customerDetail.searchTerms)
 		.then((returnedInfo) => {
 			JSON.stringify(returnedInfo);
 			customerInfo.set(customerDetail);
@@ -62,6 +64,7 @@
 		response: (r: boolean) => {
 			if (r) {
 				deleteCustomer(customerDetail.id);
+				allCustomers.update(customers => customers.filter((customer) => customer.id  !== customerDetail.id));
 			}
 		},
 	};

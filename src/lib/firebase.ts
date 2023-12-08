@@ -5,6 +5,7 @@ import "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { notifications } from '$lib/stores/notifications';
+import { allCustomers, activeServices, allServices, customerAutoSelectOptions } from "./stores/customer-store";
 import { 
     Firestore, 
     getFirestore, 
@@ -18,7 +19,8 @@ import {
     query, 
     where, 
     orderBy,
-    CollectionReference 
+    CollectionReference,
+    writeBatch
 } from "firebase/firestore";
 
 // Your web app's Firebase configuration
@@ -46,6 +48,7 @@ export const writeStore = async (key: string, value: any) => {
 
     let successMsg: String = "";
     let documentObject = {};
+    let customerSelectObject = {};
     if (key == 'services') {
         successMsg = "Service Successfully Saved";
         collectionRef = servicesCollectionRef;
@@ -65,6 +68,7 @@ export const writeStore = async (key: string, value: any) => {
         collectionRef = customerCollectionRef;
         documentObject = {
 			id: value.id,
+            documentId: '',
 			lastName: value.lastName,
 			firstName: value.firstName,
 			nickname: value.nickname,
@@ -74,10 +78,29 @@ export const writeStore = async (key: string, value: any) => {
 			notes: value.notes,
 			searchTerms: value.searchTerms,
         }
+       customerSelectObject = {
+            label: `${value.lastName}, ${value.firstName}`,
+            value: value.id,
+            keywords: value.searchTerms
+        }
     }
 
     try {
         const docRef = await addDoc(collectionRef, documentObject);
+        if (key == 'customers') {
+            documentObject = {...documentObject,
+                id: docRef.id,
+            }
+            customerSelectObject = {
+                ...customerSelectObject,
+                value: docRef.id
+            }
+            allCustomers.update(customers => [...customers, documentObject])
+            customerAutoSelectOptions.update(customers => [...customers, customerSelectObject])
+        } else if (key == 'services') {
+			activeServices.update(services => [...services, documentObject]);
+			allServices.update(services => [...services, documentObject]);
+        }
         notifications.success(successMsg, 2000);
     } catch (e) {
         console.error("Error adding document: ", e);
@@ -119,27 +142,43 @@ export const writeServiceUpdate = async(serviceId: string, paid: boolean, picked
     }
 }
 
-export const writeCustomerUpdate = async(customerId: string, lastName: string, firstName: string, phone: string, email: string, balance: number, notes: string, nickname: string): Promise<any | undefined> => {
+export const writeCustomerUpdate = async(customerId: string, lastName: string, firstName: string, phone: string, email: string, balance: number, notes: string, nickname: string, searchTerms: string): Promise<any | undefined> => {
     const customerRef = doc(db, 'customers', customerId);
     try {
+        let writeObject = { id: customerId, lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname, searchTerms: searchTerms}
+        writeObject.searchTerms = `${firstName} ${lastName} ${email} ${nickname}`;
+
         const querySnapshot = await setDoc(customerRef, { lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname }, { merge: true });
+        let updatedUserData = {};
+        allCustomers.update((customers) => {
+            customers.forEach((customer) => {
+                if (customer.id == customerId) {
+                    updatedUserData = {...customer, ...writeObject};
+                }
+            }) 
+            return [...(customers.filter((customerObj) => customerObj.id !== customerId)), updatedUserData];
+        }
+        )
         return querySnapshot;
     } catch (e) {
         console.error("Error updating customer: ", e);
         notifications.danger('Error updating customer', 3000);
     }
-    
 }
 
 export const deleteCustomer = async(customerId: string): Promise<any | undefined> => {
     const customerRef = doc(db, 'customers', customerId);
     try {
         const querySnapshot = await deleteDoc(customerRef);
+        const batch = writeBatch(db);
+        const q = query(servicesCollectionRef, where('customerId', '==', customerRef))
+        const serviceQuerySnapshot = await getDocs(q);
+        serviceQuerySnapshot.docs.forEach(document => batch.delete(document.ref))
+        await batch.commit();
         notifications.success("Customer Deleted", 2000);
         return querySnapshot;
     } catch (e) {
         console.error("Error deleting customer: ", e);
         notifications.danger('Error deleting customer', 3000);
     }
-    
 }

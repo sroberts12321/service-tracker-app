@@ -3,31 +3,24 @@
 	import { onMount } from 'svelte';
 	import { readStore, writeStore } from '$lib/firebase';
 	import Toast from "$lib/Toast.svelte";
+	import { notifications } from '$lib/stores/notifications';
+	import { allCustomers, customerAutoSelectOptions } from '$lib/stores/customer-store';
+	import type { Customer } from '$lib/customer';
 
 	let customerStore: any = [];
-	let customer: any = {};
-
-	onMount(async () => {
-		const res = await readStore('customers')
-		.then((returnedCustomers) => {
-			customerStore = [];
-			 returnedCustomers.forEach((doc) => {
-                let customerName = `${doc.get('lastName')}, ${doc.get('firstName')}`;
-				let nickname: string = doc.get('nickname') != undefined ? doc.get('nickname') : ' ';
-                let customerKeywords = `${doc.get('lastName')}, ${doc.get('firstName')}, ${nickname}`;
-				customer = {
-                    label: customerName,
-                    value: doc.id,
-                    keywords: customerKeywords
-				}
-				customerStore = [...customerStore, customer];
-			});
-		})
-		.catch((err) => {
-			console.error(err);
-		})
-	})
-
+	customerStore = $customerAutoSelectOptions;
+	customerAutoSelectOptions.subscribe((newStore) => customerStore = newStore);
+	let id = '';
+	let documentId = '';
+	let lastName = '';
+	let firstName = '';
+	let nickname = '';
+	let phone = '';
+	let email  = '';
+	let balance = 0;
+	let notes = '';
+	let searchTerms = '';
+	let label = '';
 	let customerSelection = '';
 	let selectedCustomerId = '';
 	$: dropOffDate = convertDate((new Date()).toLocaleDateString(), "initial");
@@ -35,7 +28,6 @@
 	let pickUpDate  = '';
 	let pickedUp = false;
 	let isReady = false;
-	let notes = '';
 	let referenceNum: string;
 	let lastEnteredRefNum: string;
 	let listOfRefNums: string[] = [];
@@ -44,6 +36,77 @@
 	$: if (listOfRefNums.length > 0) {
 		iterateRefNum();
 	}
+	let customer: Customer = {
+		id,
+		documentId,
+		lastName,
+		firstName,
+		nickname,
+		phone,
+		email,
+		balance,
+		notes,
+		searchTerms,
+		label
+	};
+	let customerSelectLabel = '';
+	let customerSelectValue = '';
+	let customerSelectKeywords = '';
+	
+	let customerSelectionEntry: any = {
+		label: customerSelectLabel,
+		value: customerSelectValue,
+		keywords: customerSelectKeywords
+	}
+
+	onMount(async () => {
+		if (customerStore.length > 0) {
+			console.log("Data not updated");
+		} else {
+			console.log("Fetching Data");
+			const res = await readStore('customers')
+			.then((returnedCustomers) => {
+				customerStore = [];
+				allCustomers.set([]);
+				customerAutoSelectOptions.set([]);
+				returnedCustomers.forEach((doc) => {
+					customer = {
+						id: doc.id,
+						documentId: doc.get('documentId'),
+						lastName: doc.get('lastName'),
+						firstName: doc.get('firstName'),
+						nickname: doc.get('nickname'),
+						phone: doc.get('phone'),
+						email: doc.get('email'),
+						balance: doc.get('balance'),
+						notes: doc.get('notes'),
+						searchTerms: doc.get('searchTerms'),
+						label: `${doc.get('lastName')}, ${doc.get('firstName')}`
+					}
+					customerSelectionEntry = {
+						label: `${doc.get('lastName')}, ${doc.get('firstName')}`,
+						value: doc.id,
+						keywords: doc.get('searchTerms')
+					}
+					if (customer.notes === undefined) {
+						customer.notes = ' ';
+					}
+					allCustomers.update(customers => [...customers, customer]);
+					customerAutoSelectOptions.update(customers => [...customers, customerSelectionEntry]);
+				});
+			})
+			.catch((err) => {
+				console.error(err);
+				notifications.danger('Error Getting Customer Data', 3000);
+			})
+			console.log('customer fetching successful');
+			customerStore = $customerAutoSelectOptions;
+			return customerStore;
+		}
+	})
+
+
+
 	function convertDate(dateStr: string, dateType: string) {
 		let newDateList;
 		let month;

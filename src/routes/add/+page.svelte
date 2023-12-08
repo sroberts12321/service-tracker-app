@@ -5,6 +5,7 @@
 	import { writeStore } from '$lib/firebase';
 
 	let id = '';
+	let documentId = '';
 	let lastName = '';
 	let firstName = '';
 	let phone = '';
@@ -15,6 +16,7 @@
 	$: searchTerms = `${firstName} ${lastName} ${email} ${nickname}`
 	let customer: Customer = {
 			id: id,
+			documentId: documentId,
 			lastName: lastName,
 			firstName: firstName,
 			nickname: nickname,
@@ -22,13 +24,15 @@
 			email: email,
 			balance: balance,
 			notes: notes,
-			searchTerms: searchTerms
+			searchTerms: searchTerms,
+			label: `${lastName}, ${firstName}`
 	};
 
 	async function addNewCustomer() {
 		const uniqueId = crypto.randomUUID();
 		customer = {
 			id: uniqueId,
+			documentId: documentId,
 			lastName: lastName,
 			firstName: firstName,
 			nickname: nickname,
@@ -36,7 +40,8 @@
 			email: email,
 			balance: balance,
 			notes: notes,
-			searchTerms: searchTerms
+			searchTerms: searchTerms,
+			label: `${lastName}, ${firstName}`
 		}
 		writeStore('customers', customer)
 		.catch((err) => {

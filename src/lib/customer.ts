@@ -1,5 +1,6 @@
 export class Customer {
     id: string;
+    documentId: string;
     lastName: string;
     firstName: string;
     nickname: string;
@@ -8,9 +9,11 @@ export class Customer {
     balance: number;
     notes: string;
     searchTerms: string;
+    label: string;
 
-    constructor(id: string, lastName: string, firstName: string, nickname: string, phone: string, email: string, balance: number, notes: string, searchTerms: string) {
+    constructor(id: string, documentId:string, lastName: string, firstName: string, nickname: string, phone: string, email: string, balance: number, notes: string, searchTerms: string, label: string) {
         this.id = id;
+        this.documentId = documentId;
         this.lastName = lastName;
         this.firstName = firstName;
         this.nickname = nickname;
@@ -19,5 +22,6 @@ export class Customer {
         this.balance = balance;
         this.notes = notes;
         this.searchTerms = searchTerms;
+        this.label = `${lastName}, ${firstName}`
     }
 }
