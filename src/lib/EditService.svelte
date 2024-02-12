@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let parent: any;
 	import { getModalStore, type ModalSettings, type ModalComponent  } from '@skeletonlabs/skeleton';
-	import { writeServiceUpdate } from './firebase';
+	import { writeServiceUpdate, deleteService } from './firebase';
 	import CustomerDetail from './CustomerDetail.svelte';
 	import { activeServices } from './stores/customer-store';
 
@@ -56,6 +56,22 @@
 		}
 
 		return newDate;
+	}	
+	const confirmModal: ModalSettings = {
+		type: 'confirm',
+		title: 'Please Confirm',
+		body: 'Are you sure you want to delete this service?',
+		response: (r: boolean) => {
+			if (r) {
+				deleteService(serviceDetail.serviceId);
+				activeServices.update(services => services.filter((service) => service.serviceId !== serviceDetail.serviceId))
+			}
+		},
+	};
+
+	function confirmDelete() {
+		modalStore.close();
+		modalStore.trigger(confirmModal);
 	}	
 
 	async function handleReturnToCustomerDetail(meta: unknown) {
@@ -115,9 +131,12 @@
 			</label>
 		</form> 
 		<!-- prettier-ignore -->
-		<footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}>Back</button>
+		<footer class="modal-footer {parent.regionFooter} flex justify-between">
+			<button class="btn variant-filled-error" type="button" on:click={confirmDelete}>Delete</button>
+			<div>
+				<button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}>Back</button>
                 <button class="btn {parent.buttonPositive}" on:click={editService}>Submit Change</button>
-    </footer>
+			</div>
+		</footer>
 	</div>
 {/if}

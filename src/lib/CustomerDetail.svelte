@@ -81,7 +81,7 @@
 		customerData.customerInfo.nickname = initialState.nickname;
 	}
 
-    async function serviceCheckInHandler(meta: unknown) {
+    async function serviceCheckInHandler(meta: any) {
 		if (meta.detail[5] === undefined) {
 			meta.detail[5] = ' ';
 		}

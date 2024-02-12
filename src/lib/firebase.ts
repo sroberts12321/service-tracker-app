@@ -1,6 +1,7 @@
 // Required for side-effects
 import firebase from "firebase/compat/app";
 import "firebase/firestore";
+import type { Customer } from "$lib/customer";
 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -22,16 +23,25 @@ import {
     CollectionReference,
     writeBatch
 } from "firebase/firestore";
+import { 
+    PUBLIC_apiKey, 
+    PUBLIC_authDomain, 
+    PUBLIC_projectId, 
+    PUBLIC_storageBucket, 
+    PUBLIC_messagingSenderId, 
+    PUBLIC_appId, 
+    PUBLIC_measurementId 
+} from "$env/static/public";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBDdHjvhFsSfIDgWjgAJVDgAjPhdT7epvY",
-  authDomain: "service-tracker-app-2c492.firebaseapp.com",
-  projectId: "service-tracker-app-2c492",
-  storageBucket: "service-tracker-app-2c492.appspot.com",
-  messagingSenderId: "16749129106",
-  appId: "1:16749129106:web:57c2b46184feca5d62254b",
-  measurementId: "G-G3XNH997J2"
+  apiKey: PUBLIC_apiKey,
+  authDomain: PUBLIC_authDomain,
+  projectId: PUBLIC_projectId,
+  storageBucket: PUBLIC_storageBucket,
+  messagingSenderId: PUBLIC_messagingSenderId,
+  appId: PUBLIC_appId,
+  measurementId: PUBLIC_measurementId 
 };
 
 // Initialize Firebase
@@ -151,7 +161,7 @@ export const writeCustomerUpdate = async(customerId: string, lastName: string, f
         const querySnapshot = await setDoc(customerRef, { lastName: lastName, firstName: firstName, phone: phone, email: email, balance: balance, notes: notes, nickname: nickname }, { merge: true });
         let updatedUserData = {};
         allCustomers.update((customers) => {
-            customers.forEach((customer) => {
+            customers.forEach((customer: Customer) => {
                 if (customer.id == customerId) {
                     updatedUserData = {...customer, ...writeObject};
                 }
@@ -163,6 +173,18 @@ export const writeCustomerUpdate = async(customerId: string, lastName: string, f
     } catch (e) {
         console.error("Error updating customer: ", e);
         notifications.danger('Error updating customer', 3000);
+    }
+}
+
+export const deleteService = async(serviceId: string): Promise<any | undefined> => {
+    const serviceRef = doc(db, 'services', serviceId);
+    try {
+        const querySnapshot = await deleteDoc(serviceRef);
+        notifications.success("Service Deleted", 2000);
+        return querySnapshot;
+    } catch (e) {
+        console.error("Error deleting service: ", e);
+        notifications.danger('Error deleting service', 3000);
     }
 }
 

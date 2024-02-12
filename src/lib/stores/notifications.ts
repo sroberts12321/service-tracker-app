@@ -2,10 +2,10 @@ import { writable, derived } from "svelte/store"
 
 const TIMEOUT = 3000
 
-function createNotificationStore (timeout) {
+function createNotificationStore (timeout: any) {
     const _notifications = writable([])
 
-    function send (message, type = "default", timeout) {
+    function send (message: String, type = "default", timeout: any) {
         _notifications.update(state => {
             return [...state, { id: id(), type, message, timeout }]
         })
@@ -32,11 +32,11 @@ function createNotificationStore (timeout) {
     return {
         subscribe,
         send,
-        default: (msg, timeout) => send(msg, "default", timeout),
-        danger: (msg, timeout) => send(msg, "danger", timeout),
-        warning: (msg, timeout) => send(msg, "warning", timeout),
-        info: (msg, timeout) => send(msg, "info", timeout),
-        success: (msg, timeout) => send(msg, "success", timeout),
+        default: (msg: String, timeout: any) => send(msg, "default", timeout),
+        danger: (msg: String, timeout: any) => send(msg, "danger", timeout),
+        warning: (msg: String, timeout: any) => send(msg, "warning", timeout),
+        info: (msg:String, timeout: any) => send(msg, "info", timeout),
+        success: (msg: String, timeout: any) => send(msg, "success", timeout),
     }
 }
 
@@ -44,4 +44,4 @@ function id() {
     return '_' + Math.random().toString(36).substr(2, 9);
 };
 
-export const notifications = createNotificationStore()
+export const notifications = createNotificationStore(TIMEOUT)

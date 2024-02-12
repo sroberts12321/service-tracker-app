@@ -1,6 +1,5 @@
 import type { Updater, Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-// import type { Customer } from '$lib/customer';
 
 type Customer = {
     id: string;
@@ -53,17 +52,17 @@ const initialCustomerInfoState: Customer = {
 }
 
 // List of all Services
-export let allServices = writable([]);
+export let allServices: Writable<[]> = writable([]);
 // Subset of all services that is here to make switching between the two faster
-export let activeServices = writable([]);
+export let activeServices: Writable<[]> = writable([]);
 // One of many objects that exist in one of the two lists above
-export let serviceDetail = writable({});
+export let serviceDetail: Writable<{}> = writable({});
 
 // List of all Customers
-export let allCustomers = writable([]);
+export let allCustomers: Writable<[]>= writable([]);
 
 // List formatted for the autoselect options in the autocomplete field
-export let customerAutoSelectOptions = writable([]);
+export let customerAutoSelectOptions: Writable<[]> = writable([]);
 
 // One of the many objects that exist in the allCustomers list
 export let customerInfo = writable<Customer>(initialCustomerInfoState);
