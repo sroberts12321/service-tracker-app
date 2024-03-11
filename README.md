@@ -25,6 +25,6 @@ If you did every step correctly you should see the following screen:
 
 Here are a few more screenshots of some of the other pages
 
-![Screenshot of the search page of the app](/static/images/search_page.png)
+![Screenshot of the search page of the app](/static/images/search_gif.gif)
 
 ![Screenshot of the add service page](/static/images/add_service.png)
