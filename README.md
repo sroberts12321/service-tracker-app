@@ -22,3 +22,9 @@ To start using this app follow these instructions:
 If you did every step correctly you should see the following screen:
 
 ![Screenshot of the main page of the service-tracker-app application](/static/images/main_page.png)
+
+Here are a few more screenshots of some of the other pages
+
+![Screenshot of the search page of the app](/static/images/search_page.png)
+
+![Screenshot of the add service page](/static/images/add_service.png)
