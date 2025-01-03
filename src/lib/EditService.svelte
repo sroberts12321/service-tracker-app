@@ -74,6 +74,12 @@
 		modalStore.trigger(confirmModal);
 	}	
 
+	function payAndPickUp() {
+		serviceDetail.pickedUp = true
+		serviceDetail.paid = true
+		editService()
+	}
+
 	async function handleReturnToCustomerDetail(meta: unknown) {
 		const c: ModalComponent = { ref: CustomerDetail };
 			const settings: ModalSettings = {
@@ -113,21 +119,28 @@
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
        <form class="modal-form {cForm}">
 			<div class="grid grid-cols-2 col-span-1">
-				<p class="col-span-2">
-					<span class="h4">Order Status</span>
-				</p>
-				<label class="flex items-center space-x-2">
-					<input bind:checked={serviceDetail.paid} class="checkbox" type="checkbox" />
-					<p>Paid</p>
-				</label>
-				<label class="label">
-					<span>Picked Up</span>
-					<input class="checkbox" type="checkbox" bind:checked={serviceDetail.pickedUp} placeholder="Enter phone..." />
-				</label>
+					<div class="col-span-1 pt-3">
+						<button class="btn variant-filled-tertiary" on:click={payAndPickUp}>
+							Check Out
+						</button>
+					</div>
+					<div class="grid grid-cols-2 col-span-1">
+						<p class="col-span-2">
+							<span class="h4">Order Status</span>
+						</p>
+						<label class="flex items-center space-x-2">
+							<input bind:checked={serviceDetail.paid} class="checkbox" type="checkbox" />
+							<p>Paid</p>
+						</label>
+						<label class="label">
+							<input class="checkbox" type="checkbox" bind:checked={serviceDetail.pickedUp} />
+							<span>Picked Up</span>
+						</label>
+				</div>
 			</div>
 			<label class="label">
 				<span>Pick Up Date</span>
-				<input class="input" type="date" bind:value={serviceDetail.pickUpDate} placeholder="Enter email address..." />
+				<input class="input" type="date" bind:value={serviceDetail.pickUpDate} />
 			</label>
 		</form> 
 		<!-- prettier-ignore -->
