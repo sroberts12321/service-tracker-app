@@ -137,12 +137,12 @@
 {#if $modalStore[0]}
 	<div class="modal-example-form {cBase}">
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
-		<article>{`Account Notes: ${customerDetail.notes}` ?? '(body missing)'}</article>
+		<article>{`Account Notes: ${customerDetail.notes}`}</article>
 		<form id="orderForm">
 			<div class="grid grid-cols-2">
 				<label class="label mt-1 mr-5">
 					<span>Last Name</span>
-					<input disabled={true} bind:value={customerDetail.lastName} class="input" type="text" placeholder="" required/>
+					<input bind:value={customerDetail.lastName} class="input" type="text" placeholder="" required/>
 				</label>
 				<label class="label mt-1">
 					<span>First Name</span>
