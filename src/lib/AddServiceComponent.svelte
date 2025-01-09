@@ -176,59 +176,48 @@
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
 		<form id="orderForm">
-				<div class="grid grid-cols-4">
-					<label class="label mt-5 mr-5 col-span-2">
-						<span class="h4">Customer</span>
-						<input
-							class="input"
-							type="search"
-							bind:value={customerName}
-							placeholder="Search..."
-                            disabled={true}
-						/>
-					</label>
-					<!-- svelte-ignore a11y-label-has-associated-control -->
-					<label class="label mt-5 col-span-2">
-						<span class="h4">Service Number</span>
-						<InputChip on:add={onChipAdd} on:input={inputChipValidation} hidden={true} maxlength={4} size={0} type="text" bind:input={referenceNum} bind:value={listOfRefNums} name="chips" placeholder={"0000"}/>
-					</label>
-					<label class="label mt-5 mr-5 col-span-2">
-						<span class="h4">Dropoff Date</span>
-						<input class="input" type="date" bind:value={dropOffDate}/>
-					</label>
-					<label class="label mt-5 col-span-2 row-span-2">
-						<span class="h4">Notes: </span>
-						<textarea bind:value={notes} class="textarea" rows="4" placeholder="Notes for the order" />
-					</label>
-					<label class="label mt-5 mr-5 flex flex-col col-span-1">
-						<div>
-							<span class="h4">Type of Service</span>
-						</div>
-						<div class="grid content-between">
-							{#each ['Cleaning', 'Alterations'] as service}
-								<label>
-									<input class="" type='radio' name='serviceType' value={service} bind:group={typeOfService} />
-									{service}
-								</label>
-							{/each}
-						</div>
-					</label>
-					<div class="mt-5 grid grid-cols-2 col-span-1">
-						<p class="col-span-2">
-							<span class="h4">Order Status</span>
-						</p>
-						<label class="flex items-center space-x-2">
-							<input bind:checked={paid} class="checkbox" type="checkbox" />
-							<p>Paid</p>
-						</label>
+			<div class="grid grid-cols-4 -mt-4">
+				<label class="label mt-2 mr-5 col-span-2">
+					<span class="h4">Dropoff Date</span>
+					<input class="input" type="date" bind:value={dropOffDate}/>
+				</label>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class="label mt-2 col-span-2">
+					<span class="h4">Order Number(s)</span>
+					<InputChip on:add={onChipAdd} on:input={inputChipValidation} hidden={true} maxlength={4} size={0} type="text" bind:input={referenceNum} bind:value={listOfRefNums} name="chips" placeholder={"0000"}/>
+				</label>
+				<label class="label mt-2 mr-5 col-span-2 row-span-2 overflow-auto">
+					<span class="h4">Order Notes: </span>
+					<textarea bind:value={notes} class="textarea" rows="2" placeholder="Notes for the order" />
+				</label>
+				<label class="label mt-3 flex flex-col col-span-1">
+					<div>
+						<span class="h4">Type of Service</span>
 					</div>
+					<div class="grid content-between">
+						{#each ['Cleaning', 'Alterations'] as service}
+							<label>
+								<input class="" type='radio' name='serviceType' value={service} bind:group={typeOfService} />
+								{service}
+							</label>
+						{/each}
+					</div>
+				</label>
+				<div class="mt-3 grid grid-cols-2 col-span-1">
+					<p class="col-span-2">
+						<span class="h4">Order Status</span>
+					</p>
+					<label class="flex items-center space-x-2">
+						<input bind:checked={paid} class="checkbox" type="checkbox" />
+						<p>Paid</p>
+					</label>
 				</div>
-			</form>
-		<!-- prettier-ignore -->
+			</div>
+		</form>
 		<footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}>Back</button>
-            <button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
-    </footer>
+			<button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}>Back</button>
+			<button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
+		</footer>
 	</div>
 {/if}
 <Toast />
