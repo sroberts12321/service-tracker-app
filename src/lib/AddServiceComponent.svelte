@@ -130,7 +130,7 @@
 
 	function increment() {
 		if (Number(lastEnteredRefNum) > 9999) {
-			referenceNum = '1';
+			referenceNum = '0';
 		} else {	
 			referenceNum = (Number(lastEnteredRefNum) + 1).toString();
 		}
@@ -184,7 +184,7 @@
 				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label class="label mt-2 col-span-2">
 					<span class="h4">Order Number(s)</span>
-					<InputChip on:add={onChipAdd} on:input={inputChipValidation} hidden={true} maxlength={4} size={0} type="text" bind:input={referenceNum} bind:value={listOfRefNums} name="chips" placeholder={"0000"}/>
+					<InputChip on:add={onChipAdd} on:input={inputChipValidation} hidden={true} maxlength={5} size={0} type="text" bind:input={referenceNum} bind:value={listOfRefNums} name="chips" placeholder={"0000"}/>
 				</label>
 				<label class="label mt-2 mr-5 col-span-2 row-span-2 overflow-auto">
 					<span class="h4">Order Notes: </span>
