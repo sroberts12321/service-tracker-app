@@ -190,7 +190,6 @@
 		<h3 class="h2 text-primary-500">Find Customer</h3>
 		<form id="searchForm">
 			<label class="label mt-1">
-				<span>Last Name</span>
 				<input bind:value={$searchStore.search} class="input" type="text" placeholder="Search..." />
 			</label>
 		</form>
