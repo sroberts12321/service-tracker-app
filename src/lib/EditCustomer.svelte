@@ -17,22 +17,22 @@
 	let initialState: Customer;
 	customerInfo.subscribe((data) => {
 		customerDetail = data;
-	})
+	});
 
 	onMount(() => {
 		initialState = {
 			id: customerDetail.id,
-			lastName: customerDetail.lastName, 
-			firstName: customerDetail.firstName, 
+			lastName: customerDetail.lastName,
+			firstName: customerDetail.firstName,
 			nickname: customerDetail.nickname,
-			phone: customerDetail.phone, 
-			email: customerDetail.email, 
-			balance: customerDetail.balance, 
+			phone: customerDetail.phone,
+			email: customerDetail.email,
+			balance: customerDetail.balance,
 			notes: customerDetail.notes,
 			searchTerms: customerDetail.searchTerms,
 			label: `${customerDetail.lastName}, ${customerDetail.firstName}`
-		}
-	})	
+		};
+	});
 
 	// Base Classes
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
@@ -40,21 +40,26 @@
 
 	async function handleEditCustomer() {
 		writeCustomerUpdate(
-			customerDetail.id, 
-			customerDetail.lastName, 
-			customerDetail.firstName, 
-			customerDetail.phone, 
-			customerDetail.email, 
-			customerDetail.balance, 
-			customerDetail.notes, 
+			customerDetail.id,
+			customerDetail.lastName,
+			customerDetail.firstName,
+			customerDetail.phone,
+			customerDetail.email,
+			customerDetail.balance,
+			customerDetail.notes,
 			customerDetail.nickname,
-			customerDetail.searchTerms)
-		.then((returnedInfo) => {
-			JSON.stringify(returnedInfo);
-			customerInfo.set(customerDetail);
-		}).catch((err) => {
-			console.error(err);
-		}).finally(() => {handleReturnToCustomerDetail(true)});
+			customerDetail.searchTerms
+		)
+			.then((returnedInfo) => {
+				JSON.stringify(returnedInfo);
+				customerInfo.set(customerDetail);
+			})
+			.catch((err) => {
+				console.error(err);
+			})
+			.finally(() => {
+				handleReturnToCustomerDetail(true);
+			});
 	}
 
 	const confirmModal: ModalSettings = {
@@ -64,15 +69,17 @@
 		response: (r: boolean) => {
 			if (r) {
 				deleteCustomer(customerDetail.id);
-				allCustomers.update(customers => customers.filter((customer) => customer.id  !== customerDetail.id));
+				allCustomers.update((customers) =>
+					customers.filter((customer) => customer.id !== customerDetail.id)
+				);
 			}
-		},
+		}
 	};
 
 	function confirmDelete() {
 		modalStore.close();
 		modalStore.trigger(confirmModal);
-	}	
+	}
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
 		modalStore.close();
@@ -82,7 +89,7 @@
 	function resetInitialCustomerState() {
 		customerInfo.set(initialState);
 		customerData.customerInfo.id = initialState.id;
-		customerData.customerInfo.lastName = initialState.lastName; 
+		customerData.customerInfo.lastName = initialState.lastName;
 		customerData.customerInfo.firstName = initialState.firstName;
 		customerData.customerInfo.phone = initialState.phone;
 		customerData.customerInfo.email = initialState.email;
@@ -103,22 +110,28 @@
 					} else {
 						resetInitialCustomerState();
 						handleReturnToCustomerDetail(false);
-					}	
-				},
-			}
+					}
+				}
+			};
 			modalStore.close();
 			modalStore.trigger(confirmSaveModal);
 		} else {
 			handleReturnToCustomerDetail(true);
 		}
-	}	
+	}
 
 	function handleReturnToCustomerDetail(closeModal: boolean) {
+		let customerFullName = '';
+		if (customerDetail.firstName.length > 0) {
+			customerFullName = `${customerDetail.lastName}, ${customerDetail.firstName}`;
+		} else {
+			customerFullName = customerDetail.lastName;
+		}
 		const c: ModalComponent = { ref: CustomerDetail };
 		const settings: ModalSettings = {
 			type: 'component',
 			component: c,
-			title: `${customerDetail.firstName} ${customerDetail.lastName}`,
+			title: customerFullName,
 			body: `Account Notes: \n${customerDetail.notes}`,
 			meta: customerData,
 			buttonTextCancel: 'Close',
@@ -129,7 +142,6 @@
 		}
 		modalStore.trigger(settings);
 	}
-
 </script>
 
 <!-- @component creates a modal with a way of editing a given service. -->
@@ -142,11 +154,23 @@
 			<div class="grid grid-cols-2">
 				<label class="label mt-1 mr-5">
 					<span>Last Name</span>
-					<input bind:value={customerDetail.lastName} class="input" type="text" placeholder="" required/>
+					<input
+						bind:value={customerDetail.lastName}
+						class="input"
+						type="text"
+						placeholder=""
+						required
+					/>
 				</label>
 				<label class="label mt-1">
 					<span>First Name</span>
-					<input bind:value={customerDetail.firstName} class="input" type="text" placeholder="" required/>
+					<input
+						bind:value={customerDetail.firstName}
+						class="input"
+						type="text"
+						placeholder=""
+						required
+					/>
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Phone #</span>
@@ -162,7 +186,12 @@
 				</label>
 				<label class="label mt-1">
 					<span>Notes: </span>
-					<textarea bind:value={customerDetail.notes} class="textarea" rows="2" placeholder="Notes for the customer" />
+					<textarea
+						bind:value={customerDetail.notes}
+						class="textarea"
+						rows="2"
+						placeholder="Notes for the customer"
+					/>
 				</label>
 			</div>
 		</form>
@@ -176,4 +205,3 @@
     </footer>
 	</div>
 {/if}
-
