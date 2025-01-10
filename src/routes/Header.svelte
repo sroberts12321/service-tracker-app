@@ -6,19 +6,18 @@
 	<div class="corner">
 		
 	</div>
-
 	<nav>
-		<svg viewBox="0 0 2 3" aria-hidden="true">
+		<svg class="group" viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul>
-			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Check in</a>
+			<li class="{$page.url.pathname === '/' ? 'text-primary-300':''}" aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
+				<a href="/">Search</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/search' ? 'page' : undefined}>
+			<li class={$page.url.pathname === '/search' ? 'text-primary-300':''} aria-current={$page.url.pathname === '/search' ? 'page' : undefined}>
 				<a href="/search">Search</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}>
+			<li class={$page.url.pathname === '/add' ? 'text-primary-300':''} aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}>
 				<a href="/add">Add</a>
 			</li>
 		</ul>
@@ -84,9 +83,9 @@
 		height: 0;
 		position: absolute;
 		top: 0;
-		left: calc(50% - var(--size));
-		border: var(--size) solid transparent;
-		border-top: var(--size) solid var(--color-theme-1);
+		left: calc(50% - 6px);
+		border: 6px solid;
+		border-top: 6px solid var(--color-theme-1);
 	}
 
 	nav a {
@@ -94,13 +93,12 @@
 		height: 100%;
 		align-items: center;
 		padding: 0 0.5rem;
-		color: var(--color-text);
 		font-weight: 700;
 		font-size: 0.8rem;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		text-decoration: none;
-		transition: color 0.2s linear;
+		transition: var(--color-theme-2) 2s linear;
 	}
 
 	a:hover {
