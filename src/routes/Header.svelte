@@ -3,21 +3,16 @@
 </script>
 
 <header>
-	<div class="corner">
-		
-	</div>
+	<div class="corner" />
 	<nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul class="nav-list">
-			<li class="{$page.url.pathname === '/' ? 'text-primary-300':''}" aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Check In</a>
+			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
+				<a href="/">Search</a>
 			</li>
-			<li class={$page.url.pathname === '/search' ? 'text-primary-300':''} aria-current={$page.url.pathname === '/search' ? 'page' : undefined}>
-				<a href="/search">Search</a>
-			</li>
-			<li class={$page.url.pathname === '/add' ? 'text-primary-300':''} aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}>
+			<li aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}>
 				<a href="/add">Add</a>
 			</li>
 		</ul>
@@ -26,17 +21,15 @@
 		</svg>
 	</nav>
 
-	<div class="corner">
-		
-	</div>
+	<div class="corner" />
 </header>
 
 <style>
 	nav {
-        display: flex;
-        justify-content: center;
-        --background: rgba(255, 255, 255, 0.7);
-    }
+		display: flex;
+		justify-content: center;
+		--background: rgba(255, 255, 255, 0.7);
+	}
 
 	header {
 		display: flex;
@@ -88,89 +81,89 @@
 		color: var(--color-theme-1);
 	}
 
-    .nav-list {
-        position: relative;
-        padding: 0;
-        margin: 0;
-        height: 3em;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        list-style: none;
-        background: var(--background);
-        background-size: contain;
-    }
+	.nav-list {
+		position: relative;
+		padding: 0;
+		margin: 0;
+		height: 3em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		list-style: none;
+		background: var(--background);
+		background-size: contain;
+	}
 
-    li {
-        position: relative;
-        height: 100%;
-        transition: transform 0.2s ease, color 0.2s ease;
-    }
+	li {
+		position: relative;
+		height: 100%;
+		transition: transform 0.2s ease, color 0.2s ease;
+	}
 
-    li:hover {
-        transform: translateY(-2px);
-    }
+	li:hover {
+		transform: translateY(-2px);
+	}
 
-    li[aria-current='page']::before {
-        --size: 6px;
-        content: '';
-        width: 0;
-        height: 0;
-        position: absolute;
-        top: 0;
-        left: calc(50% - var(--size));
-        border: var(--size) solid transparent;
-        border-top: var(--size) solid var(--color-primary-500);
-        opacity: 0;
-        animation: dropIn 0.3s ease forwards;
-    }
+	li[aria-current='page']::before {
+		--size: 6px;
+		content: '';
+		width: 0;
+		height: 0;
+		position: absolute;
+		top: 0;
+		left: calc(50% - var(--size));
+		border: var(--size) solid transparent;
+		border-top: var(--size) solid var(--color-primary-500);
+		opacity: 0;
+		animation: dropIn 0.3s ease forwards;
+	}
 
-    @keyframes dropIn {
-        from {
-            opacity: 0;
-            transform: translateY(-8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+	@keyframes dropIn {
+		from {
+			opacity: 0;
+			transform: translateY(-8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
 
-    a {
-        display: flex;
-        height: 100%;
-        align-items: center;
-        padding: 0 0.5rem;
-        color: var(--color-text);
-        font-weight: 700;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        position: relative;
-    }
+	a {
+		display: flex;
+		height: 100%;
+		align-items: center;
+		padding: 0 0.5rem;
+		color: var(--color-text);
+		font-weight: 700;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		text-decoration: none;
+		transition: all 0.2s ease;
+		position: relative;
+	}
 
-    a::after {
-        content: '';
-        position: absolute;
-        bottom: 0.5em;
-        left: 0.5rem;
-        right: 0.5rem;
-        height: 2px;
-        background: var(--color-primary-500);
-        transform: scaleX(0);
-        transition: transform 0.2s ease;
-    }
+	a::after {
+		content: '';
+		position: absolute;
+		bottom: 0.5em;
+		left: 0.5rem;
+		right: 0.5rem;
+		height: 2px;
+		background: var(--color-primary-500);
+		transform: scaleX(0);
+		transition: transform 0.2s ease;
+	}
 
-    li:hover a::after {
-        transform: scaleX(1);
-    }
+	li:hover a::after {
+		transform: scaleX(1);
+	}
 
-    li[aria-current='page'] a::after {
-        transform: scaleX(1);
-        background: var(--color-primary-300);
-    }
+	li[aria-current='page'] a::after {
+		transform: scaleX(1);
+		background: var(--color-primary-300);
+	}
 
 	li[aria-current='page']::before {
 		--size: 6px;
@@ -180,8 +173,7 @@
 		position: absolute;
 		top: 0;
 		left: calc(50% - 6px);
-		border: 6px solid;
-		border-top: 6px solid var(--color-theme-1);
+		border: 6px solid transparent;
+		border-top: 6px solid rgba(var(--color-surface-500) / 1);
 	}
-
 </style>
