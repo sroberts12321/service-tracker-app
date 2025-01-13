@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 
 type Customer = {
 	id: string;
+	documentId: string;
 	lastName: string;
 	firstName: string;
 	nickname: string;
@@ -11,6 +12,7 @@ type Customer = {
 	balance: number;
 	notes: string;
 	searchTerms: string;
+	label: string;
 };
 
 export type ChangeFn<T> = (args: { curr: T; next: T }) => T;
@@ -41,6 +43,7 @@ export const overridable = <T>(store: Writable<T>, onChange?: ChangeFn<T>) => {
 };
 const initialCustomerInfoState: Customer = {
 	id: '',
+	documentId: '',
 	lastName: '',
 	firstName: '',
 	nickname: '',
@@ -48,7 +51,8 @@ const initialCustomerInfoState: Customer = {
 	email: '',
 	balance: 0,
 	notes: '',
-	searchTerms: ''
+	searchTerms: '',
+	label: ''
 };
 
 // List of all Services

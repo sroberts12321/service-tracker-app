@@ -35,6 +35,7 @@
 	onMount(() => {
 		initialState = {
 			id: customerDetail.id,
+			documentId: customerDetail.documentId,
 			lastName: customerDetail.lastName,
 			firstName: customerDetail.firstName,
 			nickname: customerDetail.nickname,
@@ -42,7 +43,8 @@
 			email: customerDetail.email,
 			balance: customerDetail.balance,
 			notes: customerDetail.notes,
-			searchTerms: customerDetail.searchTerms
+			searchTerms: customerDetail.searchTerms,
+			label: customerDetail.label
 		};
 	});
 

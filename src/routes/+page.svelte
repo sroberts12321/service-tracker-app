@@ -11,37 +11,12 @@
 		allCustomers,
 		customerInfo
 	} from '$lib/stores/customer-store';
-	import type { Customer } from '$lib/customer';
+	import { Customer } from '$lib/customer';
 	import Toast from '$lib/Toast.svelte';
 
-	let customerStore: any = [];
+	let customerStore: Customer[] = [];
 	customerStore = $allCustomers;
 	allCustomers.subscribe((newStore) => (customerStore = newStore));
-
-	let id = '';
-	let documentId = '';
-	let lastName = '';
-	let firstName = '';
-	let nickname = '';
-	let phone = '';
-	let email = '';
-	let balance = 0;
-	let notes = '';
-	let searchTerms = '';
-	let label = '';
-	let customer: Customer = {
-		id,
-		documentId,
-		lastName,
-		firstName,
-		nickname,
-		phone,
-		email,
-		balance,
-		notes,
-		searchTerms,
-		label
-	};
 
 	onMount(async () => {
 		if (customerStore.length > 0) {
@@ -53,25 +28,25 @@
 					customerStore = [];
 					allCustomers.set([]);
 					returnedCustomers.forEach((doc) => {
-						let labelName = '';
+						let label = '';
 						if (doc.get('firstName').length > 0) {
-							labelName = `${doc.get('lastName')}, ${doc.get('firstName')}`;
+							label = `${doc.get('lastName')}, ${doc.get('firstName')}`;
 						} else {
-							labelName = doc.get('lastName');
+							label = doc.get('lastName');
 						}
-						customer = {
-							id: doc.id,
-							documentId: doc.get('documentId'),
-							lastName: doc.get('lastName'),
-							firstName: doc.get('firstName'),
-							nickname: doc.get('nickname'),
-							phone: doc.get('phone'),
-							email: doc.get('email'),
-							balance: doc.get('balance'),
-							notes: doc.get('notes'),
-							searchTerms: doc.get('searchTerms'),
-							label: labelName
-						};
+						let customer = new Customer(
+							doc.id,
+							doc.get('documentId'),
+							doc.get('lastName'),
+							doc.get('firstName'),
+							doc.get('nickname'),
+							doc.get('phone'),
+							doc.get('email'),
+							doc.get('balance'),
+							doc.get('notes'),
+							doc.get('searchTerms'),
+							label
+						);
 						if (customer.notes === undefined) {
 							customer.notes = ' ';
 						}
