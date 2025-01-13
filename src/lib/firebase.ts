@@ -6,12 +6,7 @@ import type { Customer } from '$lib/customer';
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { notifications } from '$lib/stores/notifications';
-import {
-	allCustomers,
-	activeServices,
-	allServices,
-	customerAutoSelectOptions
-} from './stores/customer-store';
+import { allCustomers, activeServices, allServices } from './stores/customer-store';
 import {
 	Firestore,
 	getFirestore,
@@ -108,7 +103,6 @@ export const writeStore = async (key: string, value: any) => {
 				value: docRef.id
 			};
 			allCustomers.update((customers) => [...customers, documentObject]);
-			customerAutoSelectOptions.update((customers) => [...customers, customerSelectObject]);
 		} else if (key == 'services') {
 			activeServices.update((services) => [...services, documentObject]);
 			allServices.update((services) => [...services, documentObject]);

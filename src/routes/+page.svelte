@@ -6,7 +6,6 @@
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent } from '@skeletonlabs/skeleton';
 	import {
-		customerAutoSelectOptions,
 		allServices,
 		activeServices,
 		allCustomers,
@@ -43,14 +42,6 @@
 		searchTerms,
 		label
 	};
-	let customerSelectLabel = '';
-	let customerSelectValue = '';
-	let customerSelectKeywords = '';
-	let customerSelectionEntry: any = {
-		label: customerSelectLabel,
-		value: customerSelectValue,
-		keywords: customerSelectKeywords
-	};
 
 	onMount(async () => {
 		if (customerStore.length > 0) {
@@ -81,16 +72,10 @@
 							searchTerms: doc.get('searchTerms'),
 							label: labelName
 						};
-						customerSelectionEntry = {
-							label: `${doc.get('lastName')}, ${doc.get('firstName')}`,
-							value: doc.id,
-							keywords: doc.get('searchTerms')
-						};
 						if (customer.notes === undefined) {
 							customer.notes = ' ';
 						}
 						allCustomers.update((customers) => [...customers, customer]);
-						customerAutoSelectOptions.update((customers) => [...customers, customerSelectionEntry]);
 					});
 				})
 				.catch((err) => {
