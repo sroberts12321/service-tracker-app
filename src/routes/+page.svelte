@@ -74,7 +74,7 @@
 	$: if (customerStore.length > 0) {
 		const searchCustomers = customerStore.map((customer) => ({
 			...customer,
-			searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email} ${customer.nickname} ${customer.phone}`
+			searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email} ${customer.nickname} ${customer.phone} *`
 		}));
 		searchStore = createSearchStore(searchCustomers);
 		const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
