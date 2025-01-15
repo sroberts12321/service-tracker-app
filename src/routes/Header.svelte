@@ -9,10 +9,13 @@
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul class="nav-list">
-			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
+			<li class="text-surface-500" aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
 				<a href="/">Search</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}>
+			<li
+				class="text-surface-500"
+				aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}
+			>
 				<a href="/add">Add</a>
 			</li>
 		</ul>
