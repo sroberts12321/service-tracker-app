@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { notifications } from '$lib/stores/notifications';
-	import { createSearchStore, searchHandler } from '$lib/stores/search';
+	import { createSearchStore } from '$lib/stores/search';
 	import { readCustomerDetail, readStore } from '$lib/firebase';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { getModalStore, type ModalSettings, type ModalComponent } from '@skeletonlabs/skeleton';
@@ -27,7 +27,7 @@
 				.then((returnedCustomers) => {
 					customerStore = [];
 					allCustomers.set([]);
-					returnedCustomers.forEach((doc) => {
+					returnedCustomers.forEach((doc: any) => {
 						let label = '';
 						if (doc.get('firstName').length > 0) {
 							label = `${doc.get('lastName')}, ${doc.get('firstName')}`;
@@ -77,11 +77,6 @@
 			searchTerms: `${customer.lastName} ${customer.firstName} ${customer.email} ${customer.nickname} ${customer.phone} *`
 		}));
 		searchStore = createSearchStore(searchCustomers);
-		const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
-
-		onDestroy(() => {
-			unsubscribe();
-		});
 	}
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
@@ -148,14 +143,20 @@
 		<h3 class="h2 text-primary-500">Find Customer</h3>
 		<form id="searchForm">
 			<label class="label mt-1">
-				<input bind:value={$searchStore.search} class="input" type="text" placeholder="Search..." />
+				<input
+					class="input"
+					type="text"
+					placeholder="Search..."
+					value={$searchStore.search}
+					on:input={(e) => searchStore.setSearch(e.currentTarget.value)}
+				/>
 			</label>
 		</form>
 	</div>
 </div>
 <div class="container h-full mx-auto flex justify-center items-center">
 	<div class="w-4/5 place-content-center auto-cols-auto flex-row grid-cols-3 grid">
-		{#if $searchStore.search.length < 1}
+		{#if $searchStore.filtered.length < 1}
 			<div class="" />
 		{:else}
 			{#each $searchStore.filtered as customer}

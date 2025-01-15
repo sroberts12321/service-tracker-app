@@ -45,6 +45,7 @@
     "@floating-ui/dom": "1.5.2",
     "@tauri-apps/api": "^1.4.0",
     "firebase": "^10.4.0",
+    "lodash": "^4.17.21",
     "svelte-table": "^0.6.1",
     "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v1"
   }

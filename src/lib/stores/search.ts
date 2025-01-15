@@ -1,22 +1,34 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
+import { debounce } from 'lodash';
 
 export const createSearchStore = (data: any) => {
-    const { subscribe, set, update } = writable({
-        data: data,
-        filtered: data,
-        search: "",
-    })
+	const { subscribe, set, update } = writable({
+		data: data,
+		filtered: [],
+		search: ''
+	});
 
-    return {
-        subscribe,
-        set,
-        update
-    }
-}
+	const debouncedSearch = debounce((searchTerm: string, storeData: any[]) => {
+		update((store) => {
+			if (!searchTerm.trim()) {
+				store.filtered = [];
+				return store;
+			}
 
-export const searchHandler = (store: any) => {
-    const searchTerm = store.search.toLowerCase() || ""
-    store.filtered = store.data.filter((item: any) => {
-        return item.searchTerms.toLowerCase().includes(searchTerm)
-    })
-}
+			store.filtered = storeData.filter((item: any) => {
+				return item.searchTerms.toLowerCase().includes(searchTerm.toLocaleLowerCase());
+			});
+			return store;
+		});
+	}, 300);
+
+	return {
+		subscribe,
+		set,
+		update,
+		setSearch: (term: string) => {
+			update((store) => ({ ...store, search: term }));
+			debouncedSearch(term, data);
+		}
+	};
+};
