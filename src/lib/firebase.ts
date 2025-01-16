@@ -57,7 +57,6 @@ let collectionRef: CollectionReference;
 export const writeStore = async (key: string, value: any) => {
 	let successMsg: String = '';
 	let documentObject = {};
-	let customerSelectObject = {};
 	if (key == 'services') {
 		successMsg = 'Service Successfully Saved';
 		collectionRef = servicesCollectionRef;
@@ -73,6 +72,12 @@ export const writeStore = async (key: string, value: any) => {
 			notes: value.notes
 		};
 	} else if (key == 'customers') {
+		let label = '';
+		if (value.firstName.length > 0) {
+			label = `${value.lastName}, ${value.firstName}`;
+		} else {
+			label = value.lastName;
+		}
 		successMsg = 'Customer Successfully Saved';
 		collectionRef = customerCollectionRef;
 		documentObject = {
@@ -85,12 +90,8 @@ export const writeStore = async (key: string, value: any) => {
 			email: value.email,
 			balance: value.balance,
 			notes: value.notes,
-			searchTerms: value.searchTerms
-		};
-		customerSelectObject = {
-			label: `${value.lastName}, ${value.firstName}`,
-			value: value.id,
-			keywords: value.searchTerms
+			searchTerms: value.searchTerms,
+			label
 		};
 	}
 
@@ -98,10 +99,6 @@ export const writeStore = async (key: string, value: any) => {
 		const docRef = await addDoc(collectionRef, documentObject);
 		if (key == 'customers') {
 			documentObject = { ...documentObject, id: docRef.id };
-			customerSelectObject = {
-				...customerSelectObject,
-				value: docRef.id
-			};
 			allCustomers.update((customers) => [...customers, documentObject]);
 		} else if (key == 'services') {
 			activeServices.update((services) => [...services, documentObject]);
