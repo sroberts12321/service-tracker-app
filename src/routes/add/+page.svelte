@@ -9,28 +9,21 @@
 	let lastName = '';
 	let firstName = '';
 	let phone = '';
-	let email  = '';
+	let email = '';
 	let balance = 0;
 	let notes = '';
 	let nickname = '';
-	$: searchTerms = `${firstName} ${lastName} ${email} ${nickname}`
-	let customer: Customer = {
-			id: id,
-			documentId: documentId,
-			lastName: lastName,
-			firstName: firstName,
-			nickname: nickname,
-			phone: phone,
-			email: email,
-			balance: balance,
-			notes: notes,
-			searchTerms: searchTerms,
-			label: `${lastName}, ${firstName}`
-	};
+	$: searchTerms = `${firstName} ${lastName} ${email} ${nickname} ${phone} *`;
 
 	async function addNewCustomer() {
+		let label = '';
+		if (firstName.length > 0) {
+			label = `${lastName}, ${firstName}`;
+		} else {
+			label = lastName;
+		}
 		const uniqueId = crypto.randomUUID();
-		customer = {
+		let customer: Customer = {
 			id: uniqueId,
 			documentId: documentId,
 			lastName: lastName,
@@ -41,16 +34,16 @@
 			balance: balance,
 			notes: notes,
 			searchTerms: searchTerms,
-			label: `${lastName}, ${firstName}`
-		}
+			label: label
+		};
 		writeStore('customers', customer)
-		.catch((err) => {
-			console.error(JSON.stringify(err) + ' : this is the error');
-			notifications.danger('Error adding to database', 3000);
-		})
-		.finally(() => {
-			clearCustomer();
-		});
+			.catch((err) => {
+				console.error(JSON.stringify(err) + ' : this is the error');
+				notifications.danger('Error adding to database', 3000);
+			})
+			.finally(() => {
+				clearCustomer();
+			});
 	}
 
 	function clearCustomer() {
@@ -59,7 +52,7 @@
 		firstName = '';
 		nickname = '';
 		phone = '';
-		email  = '';
+		email = '';
 		balance = 0;
 		notes = '';
 	}
@@ -77,11 +70,11 @@
 			<div class="grid grid-cols-2">
 				<label class="label mt-1 mr-5">
 					<span>Last Name</span>
-					<input bind:value={lastName} class="input" type="text" placeholder="" required/>
+					<input bind:value={lastName} class="input" type="text" placeholder="" required />
 				</label>
 				<label class="label mt-1">
 					<span>First Name</span>
-					<input bind:value={firstName} class="input" type="text" placeholder="" required/>
+					<input bind:value={firstName} class="input" type="text" placeholder="" />
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Phone #</span>
@@ -97,13 +90,24 @@
 				</label>
 				<label class="label mt-1">
 					<span>Notes: </span>
-					<textarea bind:value={notes} class="textarea" rows="2" placeholder="Notes for the customer" />
+					<textarea
+						bind:value={notes}
+						class="textarea"
+						rows="2"
+						placeholder="Notes for the customer"
+					/>
 				</label>
 			</div>
 		</form>
-		<button disabled={!lastName} on:click={addNewCustomer} id="addCustomer" type="button" class="btn variant-filled">
+		<button
+			disabled={!lastName}
+			on:click={addNewCustomer}
+			id="addCustomer"
+			type="button"
+			class="btn variant-filled"
+		>
 			<span>Add</span>
-		</button>		
+		</button>
 	</div>
 </div>
 <Toast />
