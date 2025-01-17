@@ -203,15 +203,25 @@ export const deleteService = async (serviceId: string): Promise<any | undefined>
 	}
 };
 
-export const deleteCustomer = async (customerId: string): Promise<any | undefined> => {
-	const customerRef = doc(db, 'customers', customerId);
+export const deleteCustomer = async (customer: Customer): Promise<any | undefined> => {
+	const customerRef = doc(db, 'customers', customer.id);
 	try {
+		// Delete customer in firestore
 		const querySnapshot = await deleteDoc(customerRef);
 		const batch = writeBatch(db);
+
+		// Get all services attached to that customer
 		const q = query(servicesCollectionRef, where('customerId', '==', customerRef));
 		const serviceQuerySnapshot = await getDocs(q);
+
+		// Batch delete all services with a reference to customer
 		serviceQuerySnapshot.docs.forEach((document) => batch.delete(document.ref));
 		await batch.commit();
+
+		// Update local state only after all db actions are successful
+		allCustomers.update((customers) =>
+			customers.filter((localCustomer) => localCustomer.id !== customer.id)
+		);
 		notifications.success('Customer Deleted', 2000);
 		return querySnapshot;
 	} catch (e) {

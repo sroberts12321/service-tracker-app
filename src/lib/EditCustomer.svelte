@@ -70,10 +70,7 @@
 		body: 'Are you sure you want to delete this customer?',
 		response: (r: boolean) => {
 			if (r) {
-				deleteCustomer(customerDetail.id);
-				allCustomers.update((customers) =>
-					customers.filter((customer) => customer.id !== customerDetail.id)
-				);
+				deleteCustomer(customerDetail);
 			}
 		}
 	};
