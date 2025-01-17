@@ -99,10 +99,10 @@ export const writeStore = async (key: string, value: any) => {
 		const docRef = await addDoc(collectionRef, documentObject);
 		if (key == 'customers') {
 			documentObject = { ...documentObject, id: docRef.id };
-			allCustomers.update((customers) => [...customers, documentObject]);
+			allCustomers.update((customers) => [documentObject, ...customers]);
 		} else if (key == 'services') {
-			activeServices.update((services) => [...services, documentObject]);
-			allServices.update((services) => [...services, documentObject]);
+			activeServices.update((services) => [documentObject, ...services]);
+			allServices.update((services) => [documentObject, ...services]);
 		}
 		notifications.success(successMsg, 2000);
 	} catch (e) {
@@ -155,53 +155,33 @@ export const writeServiceUpdate = async (
 	}
 };
 
-export const writeCustomerUpdate = async (
-	customerId: string,
-	lastName: string,
-	firstName: string,
-	phone: string,
-	email: string,
-	balance: number,
-	notes: string,
-	nickname: string,
-	searchTerms: string
-): Promise<any | undefined> => {
-	const customerRef = doc(db, 'customers', customerId);
+export const writeCustomerUpdate = async (customer: Customer): Promise<any | undefined> => {
+	const customerRef = doc(db, 'customers', customer.id);
 	try {
-		let writeObject = {
-			id: customerId,
-			lastName: lastName,
-			firstName: firstName,
-			phone: phone,
-			email: email,
-			balance: balance,
-			notes: notes,
-			nickname: nickname,
-			searchTerms: searchTerms
-		};
-		writeObject.searchTerms = `${firstName} ${lastName} ${email} ${nickname}`;
-
 		const querySnapshot = await setDoc(
 			customerRef,
 			{
-				lastName: lastName,
-				firstName: firstName,
-				phone: phone,
-				email: email,
-				balance: balance,
-				notes: notes,
-				nickname: nickname
+				lastName: customer.lastName,
+				firstName: customer.firstName,
+				phone: customer.phone,
+				email: customer.email,
+				notes: customer.notes,
+				nickname: customer.nickname,
+				searchTerms: customer.searchTerms
 			},
 			{ merge: true }
 		);
 		let updatedUserData = {};
 		allCustomers.update((customers) => {
-			customers.forEach((customer: Customer) => {
-				if (customer.id == customerId) {
-					updatedUserData = { ...customer, ...writeObject };
+			customers.forEach((localCustomer: Customer) => {
+				if (localCustomer.id == customer.id) {
+					updatedUserData = { ...localCustomer, ...customer };
 				}
 			});
-			return [...customers.filter((customerObj) => customerObj.id !== customerId), updatedUserData];
+			return [
+				...customers.filter((customerObj) => customerObj.id !== customer.id),
+				updatedUserData
+			];
 		});
 		notifications.success('Customer Updated', 2000);
 		return querySnapshot;

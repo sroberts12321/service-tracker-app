@@ -14,7 +14,18 @@
 	let customerData = $modalStore[0].meta;
 
 	let customerDetail: Customer;
+	// We need to keep track of initial state to determine if a modal asking to save changes should appear
 	let initialState: Customer;
+
+	// Label
+	$: customerDetail.label =
+		customerDetail.firstName.length > 0
+			? `${customerDetail.lastName}, ${customerDetail.firstName}`
+			: customerDetail.lastName;
+
+	// Search terms
+	$: customerDetail.searchTerms = `${customerDetail.firstName} ${customerDetail.lastName} ${customerDetail.email} ${customerDetail.nickname} ${customerDetail.phone} *`;
+
 	customerInfo.subscribe((data) => {
 		customerDetail = data;
 	});
@@ -40,17 +51,7 @@
 	const cHeader = 'text-2xl font-bold';
 
 	async function handleEditCustomer() {
-		writeCustomerUpdate(
-			customerDetail.id,
-			customerDetail.lastName,
-			customerDetail.firstName,
-			customerDetail.phone,
-			customerDetail.email,
-			customerDetail.balance,
-			customerDetail.notes,
-			customerDetail.nickname,
-			customerDetail.searchTerms
-		)
+		writeCustomerUpdate(customerDetail)
 			.then((returnedInfo) => {
 				JSON.stringify(returnedInfo);
 				customerInfo.set(customerDetail);
@@ -149,7 +150,7 @@
 
 {#if $modalStore[0]}
 	<div class="modal-example-form {cBase}">
-		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
+		<header class={cHeader}>{customerDetail.label}</header>
 		<article>{`Account Notes: ${customerDetail.notes}`}</article>
 		<form id="orderForm">
 			<div class="grid grid-cols-2">
