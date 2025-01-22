@@ -158,6 +158,7 @@
 						class="input"
 						type="text"
 						placeholder=""
+						autocomplete="off"
 						required
 					/>
 				</label>
@@ -168,20 +169,39 @@
 						class="input"
 						type="text"
 						placeholder=""
+						autocomplete="off"
 						required
 					/>
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Phone #</span>
-					<input bind:value={customerDetail.phone} class="input" type="text" placeholder="" />
+					<input
+						bind:value={customerDetail.phone}
+						class="input"
+						type="text"
+						placeholder=""
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-1">
 					<span>Email</span>
-					<input bind:value={customerDetail.email} class="input" type="text" placeholder="" />
+					<input
+						bind:value={customerDetail.email}
+						class="input"
+						type="text"
+						placeholder=""
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Nickname</span>
-					<input bind:value={customerDetail.nickname} class="input" type="text" placeholder="" />
+					<input
+						bind:value={customerDetail.nickname}
+						class="input"
+						type="text"
+						placeholder=""
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-1">
 					<span>Notes: </span>
@@ -190,6 +210,7 @@
 						class="textarea"
 						rows="2"
 						placeholder="Notes for the customer"
+						autocomplete="off"
 					/>
 				</label>
 			</div>

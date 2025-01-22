@@ -199,7 +199,13 @@
 				</label>
 				<label class="label mt-2 mr-5 col-span-2 row-span-2 overflow-auto">
 					<span class="h4">Order Notes: </span>
-					<textarea bind:value={notes} class="textarea" rows="2" placeholder="Notes for the order" />
+					<textarea
+						bind:value={notes}
+						class="textarea"
+						rows="2"
+						placeholder="Notes for the order"
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-3 flex flex-col col-span-1">
 					<div>

@@ -70,23 +70,42 @@
 			<div class="grid grid-cols-2">
 				<label class="label mt-1 mr-5">
 					<span>Last Name</span>
-					<input bind:value={lastName} class="input" type="text" placeholder="" required />
+					<input
+						bind:value={lastName}
+						class="input"
+						type="text"
+						placeholder=""
+						autocomplete="off"
+						required
+					/>
 				</label>
 				<label class="label mt-1">
 					<span>First Name</span>
-					<input bind:value={firstName} class="input" type="text" placeholder="" />
+					<input
+						bind:value={firstName}
+						class="input"
+						type="text"
+						placeholder=""
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Phone #</span>
-					<input bind:value={phone} class="input" type="text" placeholder="" />
+					<input bind:value={phone} class="input" type="text" placeholder="" autocomplete="off" />
 				</label>
 				<label class="label mt-1">
 					<span>Email</span>
-					<input bind:value={email} class="input" type="text" placeholder="" />
+					<input bind:value={email} class="input" type="text" placeholder="" autocomplete="off" />
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Nickname</span>
-					<input bind:value={nickname} class="input" type="text" placeholder="" />
+					<input
+						bind:value={nickname}
+						class="input"
+						type="text"
+						placeholder=""
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-1">
 					<span>Notes: </span>
@@ -95,6 +114,7 @@
 						class="textarea"
 						rows="2"
 						placeholder="Notes for the customer"
+						autocomplete="off"
 					/>
 				</label>
 			</div>
