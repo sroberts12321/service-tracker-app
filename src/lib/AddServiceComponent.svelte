@@ -1,15 +1,19 @@
-<script lang="ts">	
-	import { getModalStore, InputChip, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+<script lang="ts">
+	import {
+		getModalStore,
+		InputChip,
+		type ModalComponent,
+		type ModalSettings
+	} from '@skeletonlabs/skeleton';
 	import CustomerDetail from './CustomerDetail.svelte';
 	import { writeStore } from '$lib/firebase';
-	import Toast from "$lib/Toast.svelte";
-	import { allServices, activeServices } from './stores/customer-store';
+	import Toast from '$lib/Toast.svelte';
 
-    export let parent: any;
-	
-	$: dropOffDate = convertDate((new Date()).toLocaleDateString(), "initial");
+	export let parent: any;
+
+	$: dropOffDate = convertDate(new Date().toLocaleDateString(), 'initial');
 	let paid = false;
-	let pickUpDate  = '';
+	let pickUpDate = '';
 	let pickedUp = false;
 	let isReady = false;
 	let notes = '';
@@ -26,11 +30,11 @@
 	function convertDate(dateStr: string, dateType: string) {
 		let newDateList;
 		let month;
-		let day; 
+		let day;
 		let year;
 		let newDate;
 
-		if (dateType === "initial") {
+		if (dateType === 'initial') {
 			newDateList = dateStr.split('/');
 			month = newDateList[0];
 			day = newDateList[1];
@@ -50,31 +54,17 @@
 			day = `0${day}`;
 		}
 
-		if (dateType === "initial") {
+		if (dateType === 'initial') {
 			newDate = `${year}-${month}-${day}`;
 		} else {
 			newDate = `${month}/${day}/${year}`;
 		}
 
 		return newDate;
-	}	
+	}
 
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
-	let customerName = `${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`;
-
-    const serviceDetail = {
-        serviceId: serviceId,
-        paid: paid,
-        pickedUp: pickedUp,
-		dropOffDate: dropOffDate,
-		referenceNum: '',
-		notes: notes,
-		customerId: customerData.customerInfo.id,
-        lastName: customerData.customerInfo.lastName,
-        firstName: customerData.customerInfo.firstName,
-        customerName: `${customerData.customerInfo.lastName}, ${customerData.customerInfo.firstName}`
-    }
 
 	function handleReturnToCustomerDetail(closeModal: boolean) {
 		const c: ModalComponent = { ref: CustomerDetail };
@@ -98,48 +88,50 @@
 		if (listOfRefNums.length > 0) {
 			referenceNum = listOfRefNums.join(', ');
 		}
+		// This is here because of legacy service data structures
 		if (!customerData.customerInfo.documentId === undefined) {
 			customerData.customerInfo.id = customerData.customerInfo.documentId;
 		}
 
 		let service: any = {
 			serviceId: uniqueId,
-			customerId: customerData.customerInfo.id,	
-			dropOffDate: convertDate(dropOffDate, "database"),
+			customerId: customerData.customerInfo.id,
+			dropOffDate: convertDate(dropOffDate, 'database'),
 			paid: paid,
 			pickedUp: pickedUp,
 			pickUpDate: pickUpDate,
 			isReady: isReady,
 			referenceNum: referenceNum,
 			typeOfService: typeOfService,
-			notes: notes,
-		}
+			notes: notes
+		};
 
-		writeStore('services', service).then((returnedSomething) => {
-			customerData.activeServices = [...customerData.activeServices, service]
-			customerData.allServices = [...customerData.allServices, service]
-			modalStore.close();
-		})
-		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			clearForm();
-		});
+		writeStore('services', service)
+			.then((returnedSomething) => {
+				customerData.activeServices = [...customerData.activeServices, service];
+				customerData.allServices = [...customerData.allServices, service];
+				modalStore.close();
+			})
+			.catch((err) => {
+				console.error(err);
+			})
+			.finally(() => {
+				clearForm();
+			});
 	}
 
 	function increment() {
 		if (Number(lastEnteredRefNum) > 9999) {
 			referenceNum = '0';
-		} else {	
+		} else {
 			referenceNum = (Number(lastEnteredRefNum) + 1).toString();
 		}
 	}
 
 	function clearForm() {
-    	dropOffDate = (new Date()).toJSON().slice(0, 10);
-    	paid = false;
-    	typeOfService = 'Cleaning';
+		dropOffDate = new Date().toJSON().slice(0, 10);
+		paid = false;
+		typeOfService = 'Cleaning';
 		notes = '';
 		if (listOfRefNums.length > 0) {
 			increment();
@@ -147,7 +139,7 @@
 			referenceNum = (Number(referenceNum) + 1).toString();
 		}
 		listOfRefNums = [];
-	}	
+	}
 
 	function inputChipValidation(event: Event) {
 		if (event.data != null) {
@@ -165,10 +157,9 @@
 		if (lastEnteredRefNum != null) {
 			increment();
 		}
-	}		
+	}
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
-
 </script>
 
 {#if $modalStore[0]}
@@ -180,22 +171,22 @@
 				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label class="label mt-2 mr-5 col-span-2">
 					<span class="h4">Order Number(s)</span>
-						<InputChip 
-							on:add={onChipAdd} 
-							on:input={inputChipValidation} 
-							hidden={true} 
-							maxlength={5} 
-							size={0} 
-							type="text" 
-							bind:input={referenceNum} 
-							bind:value={listOfRefNums} 
-							name="chips" 
-							placeholder={"0000"}
-						/>
+					<InputChip
+						on:add={onChipAdd}
+						on:input={inputChipValidation}
+						hidden={true}
+						maxlength={5}
+						size={0}
+						type="text"
+						bind:input={referenceNum}
+						bind:value={listOfRefNums}
+						name="chips"
+						placeholder={'0000'}
+					/>
 				</label>
 				<label class="label mt-2 col-span-2">
 					<span class="h4">Dropoff Date</span>
-					<input class="input" type="date" bind:value={dropOffDate}/>
+					<input class="input" type="date" bind:value={dropOffDate} />
 				</label>
 				<label class="label mt-2 mr-5 col-span-2 row-span-2 overflow-auto">
 					<span class="h4">Order Notes: </span>
@@ -214,7 +205,13 @@
 					<div class="grid content-between">
 						{#each ['Cleaning', 'Alterations'] as service}
 							<label>
-								<input class="" type='radio' name='serviceType' value={service} bind:group={typeOfService} />
+								<input
+									class=""
+									type="radio"
+									name="serviceType"
+									value={service}
+									bind:group={typeOfService}
+								/>
 								{service}
 							</label>
 						{/each}
@@ -232,8 +229,14 @@
 			</div>
 		</form>
 		<footer class="modal-footer {parent.regionFooter}">
-			<button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}>Back</button>
-			<button class="btn {parent.buttonPositive}" disabled={!(referenceNum || (listOfRefNums.length > 0)) || !dropOffDate}  on:click={handleAddNewService}>Submit Change</button>
+			<button class="btn {parent.buttonNeutral}" on:click={handleReturnToCustomerDetail}
+				>Back</button
+			>
+			<button
+				class="btn {parent.buttonPositive}"
+				disabled={!(referenceNum || listOfRefNums.length > 0) || !dropOffDate}
+				on:click={handleAddNewService}>Submit Change</button
+			>
 		</footer>
 	</div>
 {/if}
