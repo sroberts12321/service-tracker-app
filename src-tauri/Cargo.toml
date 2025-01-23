@@ -1,24 +1,25 @@
 [package]
 name = "app"
-version = "0.1.0"
+version = "1.1.0"
 description = "An app for tracking service"
-authors = ["SteveinDanger"]
+authors = ["SteveBobs"]
 license = ""
 repository = ""
 default-run = "app"
 edition = "2021"
-rust-version = "1.64"
+rust-version = "1.84"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.4.0", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.4.0", features = [ "fs-remove-file", "fs-write-file", "fs-exists", "fs-read-file"] }
-tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri = { version = "2", features = [] }
+tauri-plugin-store = { version = "2" }
+tauri-plugin-fs = "2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

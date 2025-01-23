@@ -20,7 +20,7 @@
     "@sveltejs/kit": "^1.30.4",
     "@tailwindcss/forms": "0.5.6",
     "@tailwindcss/typography": "0.5.10",
-    "@tauri-apps/cli": "^1.6.3",
+    "@tauri-apps/cli": "^2.2.5",
     "@types/node": "20.6.0",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -43,7 +43,8 @@
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.5.2",
-    "@tauri-apps/api": "^1.6.0",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-fs": "^2.2.0",
     "firebase": "^10.14.1",
     "lodash": "^4.17.21",
     "svelte-table": "^0.6.3",
