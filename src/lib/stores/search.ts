@@ -20,7 +20,7 @@ export const createSearchStore = (data: any) => {
 			});
 			return store;
 		});
-	}, 300);
+	}, 450);
 
 	return {
 		subscribe,
