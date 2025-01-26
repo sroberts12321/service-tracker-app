@@ -2,6 +2,8 @@
 	import '../app.postcss';
 	import { Modal, initializeStores } from '@skeletonlabs/skeleton';
 	import Header from './Header.svelte';
+	import { fade } from 'svelte/transition';
+	import { page } from '$app/stores';
 
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
@@ -9,15 +11,16 @@
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	initializeStores();
-
 </script>
 
 <Modal />
 <div class="app">
 	<Header />
-	<main>
-		<slot />
-	</main>
+	{#key $page.url.pathname}
+		<main in:fade={{ duration: 300 }}>
+			<slot />
+		</main>
+	{/key}
 </div>
 
 <style>

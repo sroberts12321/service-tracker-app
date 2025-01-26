@@ -4,7 +4,13 @@
 	import { createSearchStore } from '$lib/stores/search';
 	import { readCustomerDetail, readStore } from '$lib/firebase';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
-	import { getModalStore, type ModalSettings, type ModalComponent } from '@skeletonlabs/skeleton';
+	import { fade } from 'svelte/transition';
+	import {
+		getModalStore,
+		type ModalSettings,
+		type ModalComponent,
+		ProgressRadial
+	} from '@skeletonlabs/skeleton';
 	import {
 		allServices,
 		activeServices,
@@ -17,11 +23,13 @@
 	let customerStore: Customer[] = [];
 	customerStore = $allCustomers;
 	allCustomers.subscribe((newStore) => (customerStore = newStore));
+	let loading = false;
 
 	onMount(async () => {
 		if (customerStore.length > 0) {
 			console.log('Data not updated');
 		} else {
+			loading = true;
 			console.log('Fetching Data');
 			const res = await readStore('customers')
 				.then((returnedCustomers) => {
@@ -59,6 +67,7 @@
 				});
 			console.log('customer fetching successful');
 			customerStore = $allCustomers;
+			loading = false;
 			return customerStore;
 		}
 	});
@@ -137,47 +146,58 @@
 	<title>Search</title>
 	<meta name="description" content="Find Customer" />
 </svelte:head>
-
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div>
-		<h3 class="h2 text-primary-500">Find Customer</h3>
-		<form id="searchForm">
-			<label class="label mt-1">
-				<input
-					class="input"
-					type="text"
-					placeholder="Search..."
-					value={$searchStore.search}
-					on:input={(e) => searchStore.setSearch(e.currentTarget.value)}
-				/>
-			</label>
-		</form>
+{#if loading}
+	<div
+		in:fade={{ duration: 300 }}
+		class="container h-full mx-auto flex flex-col justify-center items-center"
+	>
+		<h1 class="text-primary-500 h2 p-5">Loading Data...</h1>
+		<ProgressRadial class="p-5" />
 	</div>
-</div>
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="w-4/5 place-content-center auto-cols-auto flex-row grid-cols-3 grid">
-		{#if $searchStore.filtered.length < 1}
-			<div class="" />
-		{:else}
-			{#each $searchStore.filtered as customer}
-				<div class="card card-hover p-4 text-center m-5 grid content-between">
-					<div class="m-1">
-						<h3 class="h3">{customer.label}</h3>
-					</div>
-					{#if customer.nickname != undefined && customer.nickname != ''}
-						<div class="m1">
-							<p>({customer.nickname})</p>
+{:else}
+	<div in:fade={{ duration: 300 }}>
+		<div class="container h-full mx-auto flex justify-center items-center">
+			<div>
+				<h3 class="h2 text-primary-500">Find Customer</h3>
+				<form id="searchForm">
+					<label class="label mt-1">
+						<input
+							class="input"
+							type="text"
+							placeholder="Search..."
+							value={$searchStore.search}
+							on:input={(e) => searchStore.setSearch(e.currentTarget.value)}
+						/>
+					</label>
+				</form>
+			</div>
+		</div>
+		<div class="container h-full mx-auto flex justify-center items-center">
+			<div class="w-4/5 place-content-center auto-cols-auto flex-row grid-cols-3 grid">
+				{#if $searchStore.filtered.length < 1}
+					<div class="" />
+				{:else}
+					{#each $searchStore.filtered as customer}
+						<div class="card card-hover p-4 text-center m-5 grid content-between">
+							<div class="m-1">
+								<h3 class="h3">{customer.label}</h3>
+							</div>
+							{#if customer.nickname != undefined && customer.nickname != ''}
+								<div class="m1">
+									<p>({customer.nickname})</p>
+								</div>
+							{/if}
+							<div class="m-1">
+								<button
+									on:click={handleCustomerSelect(customer)}
+									class="btn btn-sm variant-filled-tertiary h">SELECT</button
+								>
+							</div>
 						</div>
-					{/if}
-					<div class="m-1">
-						<button
-							on:click={handleCustomerSelect(customer)}
-							class="btn btn-sm variant-filled-tertiary h">SELECT</button
-						>
-					</div>
-				</div>
-			{/each}
-		{/if}
+					{/each}
+				{/if}
+			</div>
+		</div>
 	</div>
-</div>
+{/if}
 <Toast />

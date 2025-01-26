@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { notifications } from '$lib/stores/notifications';
 	import Toast from '$lib/Toast.svelte';
+	import { fade } from 'svelte/transition';
 	import type { Customer } from '$lib/customer';
 	import { writeStore } from '$lib/firebase';
 
@@ -63,7 +64,7 @@
 	<meta name="description" content="Add New Customer" />
 </svelte:head>
 
-<div class="container h-full mx-auto flex justify-center items-center">
+<div in:fade={{ duration: 300 }} class="container h-full mx-auto flex justify-center items-center">
 	<div>
 		<h3 class="h2 text-primary-500">Add Customer</h3>
 		<form id="orderForm">
