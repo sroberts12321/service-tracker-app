@@ -14,10 +14,10 @@
 	let balance = 0;
 	let notes = '';
 	let nickname = '';
+	let label = '';
 	$: searchTerms = `${firstName} ${lastName} ${email} ${nickname} ${phone} *`;
 
 	async function addNewCustomer() {
-		let label = '';
 		if (firstName.length > 0) {
 			label = `${lastName}, ${firstName}`;
 		} else {
@@ -56,6 +56,7 @@
 		email = '';
 		balance = 0;
 		notes = '';
+		label = '';
 	}
 </script>
 
