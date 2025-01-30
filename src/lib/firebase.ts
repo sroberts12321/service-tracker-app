@@ -3,6 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 import type { Customer } from '$lib/customer';
 
+import { initializeAuth } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { notifications } from '$lib/stores/notifications';
@@ -46,7 +47,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const auth = initializeAuth(app, {});
 const db = getFirestore(app);
 
 const customerCollectionRef = collection(db, 'customers');
