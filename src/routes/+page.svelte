@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { createSearchStore } from '$lib/stores/search';
-	import { readCustomerDetail, readStore } from '$lib/firebase';
+	import { readCustomerDetail, readStore, checkAuth } from '$lib/firebase';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { fade } from 'svelte/transition';
 	import {
@@ -18,6 +18,7 @@
 		customerInfo
 	} from '$lib/stores/customer-store';
 	import { Customer } from '$lib/customer';
+	import { Service } from '$lib/service';
 	import Toast from '$lib/Toast.svelte';
 
 	let customerStore: Customer[] = [];
@@ -65,7 +66,7 @@
 					console.error(err);
 					notifications.danger('Error Getting Customer Data', 3000);
 				});
-			console.log('customer fetching successful');
+			console.log('Customer Fetching Successful');
 			customerStore = $allCustomers;
 			loading = false;
 			return customerStore;
@@ -88,9 +89,11 @@
 		searchStore = createSearchStore(searchCustomers);
 	}
 
-	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
+	function modalComponentForm(settings: ModalSettings): void {
 		modalStore.trigger(settings);
 	}
+
+	async function fetchData() {}
 
 	async function handleCustomerSelect(customerObject: Customer) {
 		const res = await readCustomerDetail(customerObject.id)
@@ -104,12 +107,14 @@
 				};
 				customerInfo.set(customerObject);
 				returnedServices.forEach((doc: any) => {
-					let service: any = {
-						serviceId: doc.id,
+					let service: Service = {
+						customerId: customerObject.id,
+						id: doc.id,
 						dropOffDate: doc.get('dropOffDate'),
 						paid: doc.get('paid'),
-						pickUpDate: doc.get('pickUpDate'),
 						pickedUp: doc.get('pickedUp'),
+						pickUpDate: doc.get('pickUpDate'),
+						isReady: doc.get('isReady'),
 						referenceNum: doc.get('referenceNum'),
 						typeOfService: doc.get('typeOfService'),
 						notes: doc.get('notes')
@@ -134,7 +139,7 @@
 					buttonTextCancel: 'Close',
 					response: (r) => console.log('response:', r)
 				};
-				modalComponentForm(settings, c);
+				modalComponentForm(settings);
 			})
 			.catch((err) => {
 				console.error(err);

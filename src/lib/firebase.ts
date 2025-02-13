@@ -3,19 +3,30 @@ import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 import type { Customer } from '$lib/customer';
 
-import { initializeAuth } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
+import {
+	type UserCredential,
+	type User,
+	type Auth,
+	type AuthCredential,
+	setPersistence,
+	initializeAuth,
+	browserLocalPersistence,
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+	reauthenticateWithCredential,
+	onAuthStateChanged,
+	signOut
+} from 'firebase/auth';
+import { initializeApp, FirebaseError } from 'firebase/app';
+import { goto } from '$app/navigation';
 import { notifications } from '$lib/stores/notifications';
 import { allCustomers, activeServices, allServices } from './stores/customer-store';
 import {
-	Firestore,
 	getFirestore,
 	collection,
 	addDoc,
 	deleteDoc,
 	getDocs,
-	getDoc,
 	setDoc,
 	doc,
 	query,
@@ -33,6 +44,7 @@ import {
 	PUBLIC_appId,
 	PUBLIC_measurementId
 } from '$env/static/public';
+import { writable } from 'svelte/store';
 
 // Firebase Config for Web App
 const firebaseConfig = {
@@ -47,8 +59,120 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = initializeAuth(app, {});
+const auth = initializeAuth(app, {
+	persistence: browserLocalPersistence
+});
 const db = getFirestore(app);
+
+type userStore = {
+	uid: string;
+	email: string | null;
+	displayName: string | null;
+	isAuthenticated: boolean | null;
+};
+
+function createUserStore() {
+	const { subscribe, set } = writable<userStore | null>(null);
+
+	onAuthStateChanged(auth, (userData) => {
+		if (userData) {
+			const userStore: userStore = {
+				uid: userData.uid,
+				email: userData.email,
+				displayName: userData.displayName,
+				isAuthenticated: true
+			};
+			set(userStore);
+		} else {
+			set(null);
+		}
+	});
+	return {
+		subscribe,
+		set
+	};
+}
+
+export const user = createUserStore();
+
+function handleUserCredential(userCredential: UserCredential) {
+	if (userCredential) {
+		const userStore: userStore = {
+			uid: userCredential.user.uid,
+			email: userCredential.user.email,
+			displayName: userCredential.user.displayName,
+			isAuthenticated: true
+		};
+		user.set(userStore);
+		auth.updateCurrentUser(userCredential.user);
+		goto('/');
+	} else {
+		user.set(null);
+		goto('/login');
+	}
+}
+
+function handleUserCredentialError(error: unknown) {
+	if (error instanceof FirebaseError) {
+		const errorCode = error.code;
+		const errorMessage = error.message;
+		console.log(`errorCode: ${errorCode}`);
+		console.log(`errorCode: ${errorMessage}`);
+		notifications.danger(errorMessage, 5000);
+	}
+}
+
+export function createUser(email: string, password: string, authState: Auth = auth) {
+	createUserWithEmailAndPassword(authState, email, password)
+		.then((userCredential) => {
+			handleUserCredential(userCredential);
+		})
+		.catch((error) => {
+			handleUserCredentialError(error);
+		});
+}
+
+export function loginUser(email: string, password: string, authState: Auth = auth) {
+	signInWithEmailAndPassword(authState, email, password)
+		.then((userCredential) => {
+			handleUserCredential(userCredential);
+		})
+		.catch((error) => {
+			handleUserCredentialError(error);
+		});
+}
+
+export function reauthenticateUser(prevUser: User, credential: AuthCredential) {
+	reauthenticateWithCredential(prevUser, credential)
+		.then((userCredential) => {
+			handleUserCredential(userCredential);
+		})
+		.catch((error) => {
+			handleUserCredentialError(error);
+		});
+}
+
+export function logoutUser(authState: Auth = auth) {
+	signOut(authState)
+		.then(() => {
+			user.set(null);
+			goto('/login');
+		})
+		.catch((error) => {
+			handleUserCredentialError(error);
+		});
+}
+
+export function checkAuth(authState: Auth = auth) {
+	if (authState.currentUser != null) {
+		console.log(`${authState.currentUser.toJSON}: current user auth`);
+		return true;
+	}
+	console.log(authState.currentUser);
+	return false;
+}
+
+await setPersistence(auth, browserLocalPersistence);
 
 const customerCollectionRef = collection(db, 'customers');
 const servicesCollectionRef = collection(db, 'services');
@@ -56,7 +180,7 @@ const servicesCollectionRef = collection(db, 'services');
 let collectionRef: CollectionReference;
 
 export const writeStore = async (key: string, value: any) => {
-	let successMsg: String = '';
+	let successMsg: string = '';
 	let documentObject = {};
 	if (key == 'services') {
 		successMsg = 'Service Successfully Saved';

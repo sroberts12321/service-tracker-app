@@ -1,5 +1,15 @@
 <script>
 	import { page } from '$app/stores';
+	import { logoutUser } from '$lib/firebase';
+
+	const protectedRoutes = [
+		{ path: '/', label: 'Search' },
+		{ path: '/add/', label: 'Add' }
+	];
+	function handleLogout() {
+		logoutUser();
+	}
+	export let user;
 </script>
 
 <header>
@@ -9,22 +19,40 @@
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul class="nav-list">
-			<li class="text-surface-500" aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Search</a>
-			</li>
-			<li
-				class="text-surface-500"
-				aria-current={$page.url.pathname.startsWith('/add') ? 'page' : undefined}
-			>
-				<a href="/add">Add</a>
-			</li>
+			{#if $user?.isAuthenticated}
+				{#each protectedRoutes as route}
+					<li
+						class="text-surface-500"
+						aria-current={$page.url.pathname === route.path ? 'page' : undefined}
+					>
+						<a href={route.path}>{route.label}</a>
+					</li>
+				{/each}
+			{:else}
+				<li
+					class="text-surface-500"
+					aria-current={$page.url.pathname === '/login/' ? 'page' : undefined}
+				>
+					<a href="/login">Login</a>
+				</li>
+			{/if}
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" />
 		</svg>
 	</nav>
 
-	<div class="corner" />
+	<div class="corner">
+		{#if $user?.isAuthenticated}
+			<button
+				type="button"
+				class="btn variant-glass-surface mt-2 -ml-12"
+				on:click={() => handleLogout()}
+			>
+				<span> Logout </span>
+			</button>
+		{/if}
+	</div>
 </header>
 
 <style>
