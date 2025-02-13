@@ -1,19 +1,6 @@
 import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-
-type Customer = {
-	id: string;
-	documentId: string;
-	lastName: string;
-	firstName: string;
-	nickname: string;
-	phone: string;
-	email: string;
-	balance: number;
-	notes: string;
-	searchTerms: string;
-	label: string;
-};
+import { Customer } from '../customer';
 
 const initialCustomerInfoState: Customer = {
 	id: '',
@@ -30,14 +17,14 @@ const initialCustomerInfoState: Customer = {
 };
 
 // List of all Services
-export let allServices: Writable<[]> = writable([]);
+export const allServices: Writable<[]> = writable([]);
 // List of all Services that have not been picked up (makes switching between the two faster)
-export let activeServices: Writable<[]> = writable([]);
+export const activeServices: Writable<[]> = writable([]);
 // One of many objects that exist in one of the two lists above
-export let serviceDetail: Writable<{}> = writable({});
+export const serviceDetail: Writable<object> = writable(Object);
 
 // List of all Customers
-export let allCustomers: Writable<[]> = writable([]);
+export const allCustomers: Writable<[]> = writable([]);
 
 // One of the many objects that exist in the allCustomers list
-export let customerInfo = writable<Customer>(initialCustomerInfoState);
+export const customerInfo = writable<Customer>(initialCustomerInfoState);
