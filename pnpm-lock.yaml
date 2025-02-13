@@ -9,8 +9,14 @@ dependencies:
     specifier: 1.5.2
     version: 1.5.2
   '@tauri-apps/api':
-    specifier: ^1.6.0
-    version: 1.6.0
+    specifier: ^2.0.0
+    version: 2.2.0
+  '@tauri-apps/plugin-fs':
+    specifier: ^2.2.0
+    version: 2.2.0
+  '@tauri-apps/plugin-store':
+    specifier: ~2
+    version: 2.2.0
   firebase:
     specifier: ^10.14.1
     version: 10.14.1
@@ -1134,6 +1140,10 @@ packages:
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
 
+  /@tauri-apps/api@2.2.0:
+    resolution: {integrity: sha512-R8epOeZl1eJEl603aUMIGb4RXlhPjpgxbGVEaqY+0G5JG9vzV/clNlzTeqc+NLYXVqXcn8mb4c5b9pJIUDEyAg==}
+    dev: false
+
   /@tauri-apps/cli-darwin-arm64@2.2.5:
     resolution: {integrity: sha512-qdPmypQE7qj62UJy3Wl/ccCJZwsv5gyBByOrAaG7u5c/PB3QSxhNPegice2k4EHeIuApaVJOoe/CEYVgm/og2Q==}
     engines: {node: '>= 10'}
@@ -1240,6 +1250,18 @@ packages:
       '@tauri-apps/cli-win32-ia32-msvc': 2.2.5
       '@tauri-apps/cli-win32-x64-msvc': 2.2.5
     dev: true
+
+  /@tauri-apps/plugin-fs@2.2.0:
+    resolution: {integrity: sha512-+08mApuONKI8/sCNEZ6AR8vf5vI9DXD4YfrQ9NQmhRxYKMLVhRW164vdW5BSLmMpuevftpQ2FVoL9EFkfG9Z+g==}
+    dependencies:
+      '@tauri-apps/api': 2.2.0
+    dev: false
+
+  /@tauri-apps/plugin-store@2.2.0:
+    resolution: {integrity: sha512-hJTRtuJis4w5fW1dkcgftsYxKXK0+DbAqurZ3CURHG5WkAyyZgbxpeYctw12bbzF9ZbZREXZklPq8mocCC3Sgg==}
+    dependencies:
+      '@tauri-apps/api': 2.2.0
+    dev: false
 
   /@types/cookie@0.5.4:
     resolution: {integrity: sha512-7z/eR6O859gyWIAjuvBWFzNURmf2oPBmJlfVWkwehU5nzIyjwBsTh7WMmEEV4JFnHuQ3ex4oyTvfKzcyJVDBNA==}
