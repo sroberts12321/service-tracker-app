@@ -281,10 +281,10 @@ export const writeServiceUpdate = async (
 	}
 };
 
-export const writeCustomerUpdate = async (customer: Customer): Promise<any | undefined> => {
+export const writeCustomerUpdate = async (customer: Customer): Promise<void> => {
 	const customerRef = doc(db, 'customers', customer.id);
 	try {
-		const querySnapshot = await setDoc(
+		await setDoc(
 			customerRef,
 			{
 				lastName: customer.lastName,
@@ -299,21 +299,16 @@ export const writeCustomerUpdate = async (customer: Customer): Promise<any | und
 		);
 		let updatedUserData = {};
 		allCustomers.update((customers) => {
-			customers.forEach((localCustomer: Customer) => {
-				if (localCustomer.id == customer.id) {
-					updatedUserData = { ...localCustomer, ...customer };
-				}
-			});
-			return [
-				...customers.filter((customerObj) => customerObj.id !== customer.id),
-				updatedUserData
-			];
+			const updatedCustomers = customers.map((localCustomer) =>
+				localCustomer.id === customer.id ? { ...localCustomer, ...customer } : localCustomer
+			);
+			return updatedCustomers;
 		});
 		notifications.success('Customer Updated', 2000);
-		return querySnapshot;
 	} catch (e) {
 		console.error('Error updating customer: ', e);
 		notifications.danger('Error updating customer', 3000);
+		throw e;
 	}
 };
 
