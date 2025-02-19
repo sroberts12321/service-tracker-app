@@ -2,6 +2,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 import type { Customer } from '$lib/customer';
+import type { Service } from '$lib/service';
 
 import {
 	type UserCredential,
@@ -224,10 +225,10 @@ export const writeStore = async (key: string, value: any) => {
 		const docRef = await addDoc(collectionRef, documentObject);
 		if (key == 'customers') {
 			documentObject = { ...documentObject, id: docRef.id };
-			allCustomers.update((customers) => [documentObject, ...customers]);
+			allCustomers.update((customers) => [documentObject as Customer, ...customers]);
 		} else if (key == 'services') {
-			activeServices.update((services) => [documentObject, ...services]);
-			allServices.update((services) => [documentObject, ...services]);
+			activeServices.update((services) => [documentObject as Service, ...services]);
+			allServices.update((services) => [documentObject as Service, ...services]);
 		}
 		notifications.success(successMsg, 2000);
 	} catch (e) {
