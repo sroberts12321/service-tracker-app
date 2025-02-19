@@ -93,8 +93,6 @@
 		modalStore.trigger(settings);
 	}
 
-	async function fetchData() {}
-
 	async function handleCustomerSelect(customerObject: Customer) {
 		const res = await readCustomerDetail(customerObject.id)
 			.then((returnedServices) => {
@@ -194,7 +192,7 @@
 							{/if}
 							<div class="m-1">
 								<button
-									on:click={handleCustomerSelect(customer)}
+									on:click={() => handleCustomerSelect(customer)}
 									class="btn btn-sm variant-filled-tertiary h">SELECT</button
 								>
 							</div>
