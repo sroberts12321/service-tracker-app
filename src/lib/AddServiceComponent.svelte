@@ -66,7 +66,7 @@
 	const modalStore = getModalStore();
 	const customerData = $modalStore[0].meta;
 
-	function handleReturnToCustomerDetail(closeModal: boolean) {
+	function handleReturnToCustomerDetail() {
 		const c: ModalComponent = { ref: CustomerDetail };
 		const settings: ModalSettings = {
 			type: 'component',
@@ -77,9 +77,7 @@
 			buttonTextCancel: 'Close',
 			response: (r) => console.log('response:', r)
 		};
-		if (closeModal) {
-			modalStore.close();
-		}
+		modalStore.close();
 		modalStore.trigger(settings);
 	}
 
