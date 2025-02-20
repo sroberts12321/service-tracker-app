@@ -12,8 +12,8 @@
 	import { onMount } from 'svelte';
 	const modalStore = getModalStore();
 	let customerData = $modalStore[0].meta;
-
 	let customerDetail: Customer;
+
 	// We need to keep track of initial state to determine if a modal asking to save changes should appear
 	let initialState: Customer;
 
@@ -58,13 +58,25 @@
 			})
 			.catch((err) => {
 				console.error(err);
-			})
-			.finally(() => {
-				handleReturnToCustomerDetail(true);
 			});
 	}
 
-	const confirmModal: ModalSettings = {
+	function handleSubmitCustomerChange() {
+		handleEditCustomer();
+		const c: ModalComponent = { ref: CustomerDetail };
+		const settings: ModalSettings = {
+			type: 'component',
+			component: c,
+			title: customerDetail.label,
+			body: `Account Notes: \n${customerDetail.notes}`,
+			meta: customerData,
+			buttonTextCancel: 'Close',
+			response: (r) => console.log('response:', r)
+		};
+		modalComponentForm(settings, c);
+	}
+
+	const confirmDeleteModal: ModalSettings = {
 		type: 'confirm',
 		title: 'Please Confirm',
 		body: 'Are you sure you want to delete this customer?',
@@ -75,9 +87,35 @@
 		}
 	};
 
+	const confirmSaveModal: ModalSettings = {
+		type: 'confirm',
+		title: 'Please Confirm',
+		body: 'Do you want to save changes?',
+		response: (r: boolean) => {
+			if (r) {
+				const c: ModalComponent = { ref: CustomerDetail };
+				const settings: ModalSettings = {
+					type: 'component',
+					component: c,
+					title: customerDetail.label,
+					body: `Account Notes: \n${customerDetail.notes}`,
+					meta: customerData,
+					buttonTextCancel: 'Close',
+					response: (r) => console.log('response:', r)
+				};
+				modalComponentForm(settings, c);
+				handleEditCustomer();
+			} else {
+				resetInitialCustomerState();
+				customerInfo.set(initialState);
+				handleReturnToCustomerDetail();
+			}
+		}
+	};
+
 	function confirmDelete() {
 		modalStore.close();
-		modalStore.trigger(confirmModal);
+		modalStore.trigger(confirmDeleteModal);
 	}
 
 	function modalComponentForm(settings: ModalSettings, modal: ModalComponent): void {
@@ -86,7 +124,6 @@
 	}
 
 	function resetInitialCustomerState() {
-		customerInfo.set(initialState);
 		customerData.customerInfo.id = initialState.id;
 		customerData.customerInfo.lastName = initialState.lastName;
 		customerData.customerInfo.firstName = initialState.firstName;
@@ -99,27 +136,14 @@
 
 	async function handleChangeCustomerDataConfirm() {
 		if (JSON.stringify(initialState) != JSON.stringify(customerDetail)) {
-			const confirmSaveModal: ModalSettings = {
-				type: 'confirm',
-				title: 'Please Confirm',
-				body: 'Do you want to save changes?',
-				response: (r: boolean) => {
-					if (r) {
-						handleEditCustomer();
-					} else {
-						resetInitialCustomerState();
-						handleReturnToCustomerDetail(false);
-					}
-				}
-			};
 			modalStore.close();
 			modalStore.trigger(confirmSaveModal);
 		} else {
-			handleReturnToCustomerDetail(true);
+			handleReturnToCustomerDetail();
 		}
 	}
 
-	function handleReturnToCustomerDetail(closeModal: boolean) {
+	function handleReturnToCustomerDetail() {
 		let customerFullName = '';
 		if (customerDetail.firstName.length > 0) {
 			customerFullName = `${customerDetail.lastName}, ${customerDetail.firstName}`;
@@ -136,10 +160,7 @@
 			buttonTextCancel: 'Close',
 			response: (r) => console.log('response:', r)
 		};
-		if (closeModal) {
-			modalStore.close();
-		}
-		modalStore.trigger(settings);
+		modalComponentForm(settings, c);
 	}
 </script>
 
@@ -220,7 +241,7 @@
 		<button class="btn variant-filled-error" type="button" on:click={confirmDelete}>Delete</button>
 		<div>
 			<button class="btn {parent.buttonNeutral}" on:click={handleChangeCustomerDataConfirm}>{parent.buttonTextCancel}</button>
-			<button class="btn {parent.buttonPositive}" on:click={handleEditCustomer}>Submit Change</button>
+			<button class="btn {parent.buttonPositive}" on:click={handleSubmitCustomerChange}>Submit Change</button>
 		</div>
     </footer>
 	</div>
