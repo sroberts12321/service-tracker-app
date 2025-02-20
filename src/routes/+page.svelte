@@ -107,7 +107,7 @@
 				returnedServices.forEach((doc: any) => {
 					let service: Service = {
 						customerId: customerObject.id,
-						id: doc.id,
+						serviceId: doc.id,
 						dropOffDate: doc.get('dropOffDate'),
 						paid: doc.get('paid'),
 						pickedUp: doc.get('pickedUp'),

@@ -28,4 +28,4 @@ export const serviceDetail: Writable<object> = writable(Object);
 export const allCustomers: Writable<Customer[]> = writable([]);
 
 // One of the many objects that exist in the allCustomers list
-export const customerInfo = writable<Customer>(initialCustomerInfoState);
+export const customerInfo: Writable<Customer> = writable(initialCustomerInfoState);

@@ -1,6 +1,6 @@
 export class Service {
 	customerId: string;
-	id: string;
+	serviceId: string;
 	dropOffDate: string;
 	paid: boolean;
 	pickedUp: boolean;
@@ -12,7 +12,7 @@ export class Service {
 
 	constructor(
 		customerId: string,
-		id: string,
+		serviceId: string,
 		dropOffDate: string,
 		paid: boolean,
 		pickedUp: boolean,
@@ -23,7 +23,7 @@ export class Service {
 		notes: string
 	) {
 		this.customerId = customerId;
-		this.id = id;
+		this.serviceId = serviceId;
 		this.dropOffDate = dropOffDate;
 		this.paid = paid;
 		this.pickedUp = pickedUp;

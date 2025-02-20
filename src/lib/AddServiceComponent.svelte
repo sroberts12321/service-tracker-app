@@ -7,6 +7,7 @@
 	} from '@skeletonlabs/skeleton';
 	import CustomerDetail from './CustomerDetail.svelte';
 	import { writeStore } from '$lib/firebase';
+	import type { Service } from '$lib/service';
 	import Toast from '$lib/Toast.svelte';
 
 	export let parent: any;
@@ -17,14 +18,13 @@
 	let pickedUp = false;
 	let isReady = false;
 	let notes = '';
-	let serviceId = '';
 	let referenceNum: string;
 	let lastEnteredRefNum: string;
 	let listOfRefNums: string[] = [];
 	let typeOfService = 'Cleaning';
 	let numValidationRegEx = new RegExp('^[0-9]+$');
-	$: if (listOfRefNums.length > 0) {
-		iterateRefNum();
+	$: if (listOfRefNums.length > 0 && lastEnteredRefNum != null) {
+		increment();
 	}
 
 	function convertDate(dateStr: string, dateType: string) {
@@ -82,7 +82,6 @@
 	}
 
 	async function handleAddNewService() {
-		const uniqueId = crypto.randomUUID();
 		if (listOfRefNums.length > 0) {
 			referenceNum = listOfRefNums.join(', ');
 		}
@@ -91,9 +90,9 @@
 			customerData.customerInfo.id = customerData.customerInfo.documentId;
 		}
 
-		let service: any = {
-			serviceId: uniqueId,
+		let service: Service = {
 			customerId: customerData.customerInfo.id,
+			serviceId: '',
 			dropOffDate: convertDate(dropOffDate, 'database'),
 			paid: paid,
 			pickedUp: pickedUp,
@@ -106,9 +105,7 @@
 
 		writeStore('services', service)
 			.then((returnedSomething) => {
-				customerData.activeServices = [...customerData.activeServices, service];
-				customerData.allServices = [...customerData.allServices, service];
-				modalStore.close();
+				handleReturnToCustomerDetail();
 			})
 			.catch((err) => {
 				console.error(err);
@@ -131,11 +128,6 @@
 		paid = false;
 		typeOfService = 'Cleaning';
 		notes = '';
-		if (listOfRefNums.length > 0) {
-			increment();
-		} else {
-			referenceNum = (Number(referenceNum) + 1).toString();
-		}
 		listOfRefNums = [];
 	}
 
@@ -151,11 +143,6 @@
 		lastEnteredRefNum = referenceNum;
 	}
 
-	function iterateRefNum() {
-		if (lastEnteredRefNum != null) {
-			increment();
-		}
-	}
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
 </script>

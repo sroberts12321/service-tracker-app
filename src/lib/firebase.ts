@@ -227,6 +227,7 @@ export const writeStore = async (key: string, value: any) => {
 			documentObject = { ...documentObject, id: docRef.id };
 			allCustomers.update((customers) => [documentObject as Customer, ...customers]);
 		} else if (key == 'services') {
+			documentObject = { ...documentObject, serviceId: docRef.id };
 			activeServices.update((services) => [documentObject as Service, ...services]);
 			allServices.update((services) => [documentObject as Service, ...services]);
 		}
