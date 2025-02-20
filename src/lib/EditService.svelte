@@ -112,7 +112,8 @@
 			serviceDetail.serviceId,
 			serviceDetail.paid,
 			serviceDetail.pickedUp,
-			dbConvertedDate
+			dbConvertedDate,
+			serviceDetail.notes
 		)
 			.then((returnedInfo) => {
 				modalStore.close();
@@ -127,13 +128,32 @@
 
 {#if $modalStore[0]}
 	<div class="modal-example-form {cBase}">
-		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
-		<article>{$modalStore[0].body ?? '(body missing)'}</article>
+		<header class={cHeader}>{`Order #${serviceDetail.referenceNum}`}</header>
+		<article>{`Order Notes: ${serviceDetail.notes}`}</article>
 		<form class="modal-form {cForm}">
 			<div class="grid grid-cols-2 col-span-1">
-				<div class="col-span-1 pt-3">
-					<button class="btn variant-filled-tertiary" on:click={payAndPickUp}> Check Out </button>
+				<div class="col-span-1 flex items-center justify-center pt-4 pr-4">
+					<button
+						class="btn-xl variant-filled-tertiary"
+						on:click={payAndPickUp}
+						disabled={serviceDetail.pickedUp}
+					>
+						Check Out
+					</button>
 				</div>
+				<div class="col-span-1">
+					<p class="col-span-2">
+						<span class="h4">Order Notes</span>
+					</p>
+					<textarea
+						class="textarea"
+						rows="2"
+						placeholder="Order Notes"
+						bind:value={serviceDetail.notes}
+					/>
+				</div>
+			</div>
+			<div class="grid grid-cols-2 col-span-1">
 				<div class="grid grid-cols-2 col-span-1">
 					<p class="col-span-2">
 						<span class="h4">Order Status</span>
@@ -147,11 +167,11 @@
 						<span>Picked Up</span>
 					</label>
 				</div>
+				<label class="label">
+					<span class="h4">Pick Up Date</span>
+					<input class="input" type="date" bind:value={serviceDetail.pickUpDate} />
+				</label>
 			</div>
-			<label class="label">
-				<span>Pick Up Date</span>
-				<input class="input" type="date" bind:value={serviceDetail.pickUpDate} />
-			</label>
 		</form>
 		<!-- prettier-ignore -->
 		<footer class="modal-footer {parent.regionFooter} flex justify-between">

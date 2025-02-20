@@ -264,17 +264,17 @@ export const writeServiceUpdate = async (
 	serviceId: string,
 	paid: boolean,
 	pickedUp: boolean,
-	pickUpDate: string
+	pickUpDate: string,
+	notes: string
 ): Promise<any | undefined> => {
 	const serviceRef = doc(db, 'services', serviceId);
 	try {
-		const querySnapshot = await setDoc(
+		await setDoc(
 			serviceRef,
-			{ paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate },
+			{ paid: paid, pickedUp: pickedUp, pickUpDate: pickUpDate, notes: notes },
 			{ merge: true }
 		);
 		notifications.success('Order Updated', 2000);
-		return querySnapshot;
 	} catch (e) {
 		console.error('Error updating database: ', e);
 		notifications.danger(`Error updating database ${e}`, 3000);
