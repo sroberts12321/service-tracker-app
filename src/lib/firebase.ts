@@ -14,6 +14,7 @@ import {
 	browserLocalPersistence,
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
+	sendPasswordResetEmail,
 	reauthenticateWithCredential,
 	onAuthStateChanged,
 	signOut
@@ -95,6 +96,18 @@ function createUserStore() {
 }
 
 export const user = createUserStore();
+
+export async function handlePasswordReset(email: string) {
+	await sendPasswordResetEmail(auth, email)
+		.then((res) => {
+			console.log(res);
+			notifications.success('Email Sent', 3000);
+			goto('/login');
+		})
+		.catch((error) => {
+			handleUserCredentialError(error);
+		});
+}
 
 function handleUserCredential(userCredential: UserCredential) {
 	if (userCredential) {
