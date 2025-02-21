@@ -21,8 +21,11 @@ const initialCustomerInfoState: Customer = {
 export const allServices: Writable<Service[]> = writable([]);
 // List of all Services that have not been picked up (makes switching between the two faster)
 export const activeServices: Writable<Service[]> = writable([]);
-// One of many objects that exist in one of the two lists above
-export const serviceDetail: Writable<object> = writable(Object);
+
+// Used for keeping track of the service being edited
+export const serviceInFocus: Writable<Service> = writable();
+// Used for keeping track of the customer being edited
+export const customerInFocus: Writable<Customer> = writable();
 
 // List of all Customers
 export const allCustomers: Writable<Customer[]> = writable([]);

@@ -37,17 +37,19 @@
 					customerStore = [];
 					allCustomers.set([]);
 					returnedCustomers.forEach((doc: any) => {
+						let lastName = doc.get('lastName');
+						let firstName = doc.get('firstName');
 						let label = '';
-						if (doc.get('firstName').length > 0) {
-							label = `${doc.get('lastName')}, ${doc.get('firstName')}`;
+						if (firstName.length > 0) {
+							label = `${lastName}, ${firstName}`;
 						} else {
-							label = doc.get('lastName');
+							label = lastName;
 						}
 						let customer = new Customer(
 							doc.id,
 							doc.get('documentId'),
-							doc.get('lastName'),
-							doc.get('firstName'),
+							lastName,
+							firstName,
 							doc.get('nickname'),
 							doc.get('phone'),
 							doc.get('email'),

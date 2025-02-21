@@ -3,7 +3,6 @@
 	import { Modal, initializeStores } from '@skeletonlabs/skeleton';
 	import Header from './Header.svelte';
 	import { fade } from 'svelte/transition';
-	import { page } from '$app/stores';
 	import { user } from '$lib/firebase';
 	import { goto } from '$app/navigation';
 

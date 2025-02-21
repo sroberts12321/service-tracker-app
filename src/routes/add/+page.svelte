@@ -126,7 +126,7 @@
 			on:click={addNewCustomer}
 			id="addCustomer"
 			type="button"
-			class="btn variant-filled"
+			class="btn btn-lg variant-filled"
 		>
 			<span>Add</span>
 		</button>

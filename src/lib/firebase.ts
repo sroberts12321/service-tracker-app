@@ -166,10 +166,8 @@ export function logoutUser(authState: Auth = auth) {
 
 export function checkAuth(authState: Auth = auth) {
 	if (authState.currentUser != null) {
-		console.log(`${authState.currentUser.toJSON}: current user auth`);
 		return true;
 	}
-	console.log(authState.currentUser);
 	return false;
 }
 
@@ -234,7 +232,7 @@ export const writeStore = async (key: string, value: any) => {
 		notifications.success(successMsg, 2000);
 	} catch (e) {
 		console.error('Error adding document: ', e);
-		notifications.danger('Error adding customer', 3000);
+		notifications.danger('Error updating database', 3000);
 	}
 };
 
@@ -245,7 +243,7 @@ export const readStore = async (key: string): Promise<any | undefined> => {
 		return querySnapshot;
 	} catch (e) {
 		console.error('Error reading database: ', e);
-		notifications.danger('Error pulling data', 3000);
+		notifications.danger('Error reading database', 3000);
 	}
 };
 
