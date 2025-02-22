@@ -149,6 +149,7 @@
 						class="textarea"
 						rows="2"
 						placeholder="Order Notes"
+						autocomplete="off"
 						bind:value={serviceDetail.notes}
 					/>
 				</div>

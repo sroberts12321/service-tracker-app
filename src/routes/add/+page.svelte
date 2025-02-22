@@ -66,7 +66,7 @@
 </svelte:head>
 
 <div in:fade={{ duration: 300 }} class="container h-full mx-auto flex justify-center items-center">
-	<div>
+	<div class="w-2/3">
 		<h3 class="h2 text-primary-500">Add Customer</h3>
 		<form id="orderForm">
 			<div class="grid grid-cols-2">
@@ -95,9 +95,15 @@
 					<span>Phone #</span>
 					<input bind:value={phone} class="input" type="text" placeholder="" autocomplete="off" />
 				</label>
-				<label class="label mt-1">
-					<span>Email</span>
-					<input bind:value={email} class="input" type="text" placeholder="" autocomplete="off" />
+				<label class="label mt-1 row-span-2">
+					<span>Notes: </span>
+					<textarea
+						bind:value={notes}
+						class="textarea"
+						rows="4"
+						placeholder="Notes for the customer"
+						autocomplete="off"
+					/>
 				</label>
 				<label class="label mt-1 mr-5">
 					<span>Nickname</span>
@@ -109,16 +115,6 @@
 						autocomplete="off"
 					/>
 				</label>
-				<label class="label mt-1">
-					<span>Notes: </span>
-					<textarea
-						bind:value={notes}
-						class="textarea"
-						rows="2"
-						placeholder="Notes for the customer"
-						autocomplete="off"
-					/>
-				</label>
 			</div>
 		</form>
 		<button
@@ -126,7 +122,7 @@
 			on:click={addNewCustomer}
 			id="addCustomer"
 			type="button"
-			class="btn btn-lg variant-filled"
+			class="btn btn-lg variant-filled mt-3"
 		>
 			<span>Add</span>
 		</button>
