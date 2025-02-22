@@ -204,13 +204,13 @@
 						autocomplete="off"
 					/>
 				</label>
-				<label class="label mt-1">
-					<span>Email</span>
-					<input
-						bind:value={customerDetail.email}
-						class="input"
-						type="text"
-						placeholder=""
+				<label class="label mt-1 row-span-2">
+					<span>Notes: </span>
+					<textarea
+						bind:value={customerDetail.notes}
+						class="textarea"
+						rows="4"
+						placeholder="Notes for the customer"
 						autocomplete="off"
 					/>
 				</label>
@@ -221,16 +221,6 @@
 						class="input"
 						type="text"
 						placeholder=""
-						autocomplete="off"
-					/>
-				</label>
-				<label class="label mt-1">
-					<span>Notes: </span>
-					<textarea
-						bind:value={customerDetail.notes}
-						class="textarea"
-						rows="2"
-						placeholder="Notes for the customer"
 						autocomplete="off"
 					/>
 				</label>
