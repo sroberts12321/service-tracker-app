@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore';
 export class Service {
 	customerId: string;
 	serviceId: string;
@@ -9,6 +10,7 @@ export class Service {
 	referenceNum: string;
 	typeOfService: string;
 	notes: string;
+	expirationDate: Timestamp;
 
 	constructor(
 		customerId: string,
@@ -20,7 +22,8 @@ export class Service {
 		isReady: boolean,
 		referenceNum: string,
 		typeOfService: string,
-		notes: string
+		notes: string,
+		expirationDate: Timestamp
 	) {
 		this.customerId = customerId;
 		this.serviceId = serviceId;
@@ -32,5 +35,6 @@ export class Service {
 		this.referenceNum = referenceNum;
 		this.typeOfService = typeOfService;
 		this.notes = notes;
+		this.expirationDate = expirationDate;
 	}
 }
