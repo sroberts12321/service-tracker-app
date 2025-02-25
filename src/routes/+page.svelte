@@ -129,7 +129,8 @@
 						isReady: doc.get('isReady'),
 						referenceNum: doc.get('referenceNum'),
 						typeOfService: doc.get('typeOfService'),
-						notes: doc.get('notes')
+						notes: doc.get('notes'),
+						expirationDate: doc.get('expirationDate')
 					};
 					if (service.pickedUp === false) {
 						activeServices.update((services) => [...services, service]);

@@ -191,7 +191,7 @@ const servicesCollectionRef = collection(db, 'services');
 
 let collectionRef: CollectionReference;
 
-export const writeStore = async (key: string, value: any) => {
+export const writeStore = async (key: 'services' | 'customers', value: any) => {
 	let successMsg: string = '';
 	let documentObject = {};
 	if (key == 'services') {
@@ -206,7 +206,8 @@ export const writeStore = async (key: string, value: any) => {
 			pickedUp: value.pickedUp,
 			referenceNum: value.referenceNum,
 			typeOfService: value.typeOfService,
-			notes: value.notes
+			notes: value.notes,
+			expirationDate: value.expirationDate
 		};
 	} else if (key == 'customers') {
 		let label = '';
@@ -309,7 +310,6 @@ export const writeCustomerUpdate = async (customer: Customer): Promise<void> => 
 			},
 			{ merge: true }
 		);
-		let updatedUserData = {};
 		allCustomers.update((customers) => {
 			const updatedCustomers = customers.map((localCustomer) =>
 				localCustomer.id === customer.id ? { ...localCustomer, ...customer } : localCustomer

@@ -9,10 +9,12 @@
 	import { writeStore } from '$lib/firebase';
 	import type { Service } from '$lib/service';
 	import Toast from '$lib/Toast.svelte';
+	import { Timestamp } from 'firebase/firestore';
 
 	export let parent: any;
 
 	$: dropOffDate = convertDate(new Date().toLocaleDateString(), 'initial');
+	let expirationDate = new Date();
 	let paid = false;
 	let pickUpDate = '';
 	let pickedUp = false;
@@ -100,7 +102,8 @@
 			isReady: isReady,
 			referenceNum: referenceNum,
 			typeOfService: typeOfService,
-			notes: notes
+			notes: notes,
+			expirationDate: Timestamp.fromDate(expirationDate)
 		};
 
 		writeStore('services', service)
