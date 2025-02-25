@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let parent: any;
 	import { getModalStore, type ModalSettings, type ModalComponent } from '@skeletonlabs/skeleton';
-	import { writeServiceUpdate, deleteService } from './firebase';
+	import { writeServiceUpdate, deleteServices } from './firebase';
 	import CustomerDetail from './CustomerDetail.svelte';
 	import { activeServices } from './stores/customer-store';
 
@@ -63,7 +63,7 @@
 		body: 'Are you sure you want to delete this service?',
 		response: (r: boolean) => {
 			if (r) {
-				deleteService(serviceDetail.serviceId);
+				deleteServices([serviceDetail.serviceId]);
 				activeServices.update((services) =>
 					services.filter((service) => service.serviceId !== serviceDetail.serviceId)
 				);

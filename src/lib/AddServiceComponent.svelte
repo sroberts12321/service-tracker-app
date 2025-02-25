@@ -91,7 +91,7 @@
 		if (!customerData.customerInfo.documentId === undefined) {
 			customerData.customerInfo.id = customerData.customerInfo.documentId;
 		}
-
+		expirationDate.setFullYear(expirationDate.getFullYear() + 2);
 		let service: Service = {
 			customerId: customerData.customerInfo.id,
 			serviceId: '',

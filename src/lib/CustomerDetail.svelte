@@ -53,7 +53,7 @@
 		modalStore.close();
 	}
 
-	const allServicesTableData: TableSource = {
+	$: allServicesTableData = {
 		head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
 		body: tableMapperValues($allServices, [
 			'referenceNum',
@@ -72,7 +72,7 @@
 		])
 	};
 
-	const activeServicesTableData: TableSource = {
+	$: activeServicesTableData = {
 		head: ['Service #', 'Type of Service', 'Drop off Date', 'Paid', 'Picked Up'],
 		body: tableMapperValues($activeServices, [
 			'referenceNum',

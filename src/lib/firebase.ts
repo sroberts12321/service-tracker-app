@@ -324,15 +324,25 @@ export const writeCustomerUpdate = async (customer: Customer): Promise<void> => 
 	}
 };
 
-export const deleteService = async (serviceId: string): Promise<any | undefined> => {
-	const serviceRef = doc(db, 'services', serviceId);
+export const deleteServices = async (serviceIds: string[]): Promise<any | undefined> => {
+	const batch = writeBatch(db);
+	for (const serviceId of serviceIds) {
+		const docRef = doc(db, 'services', serviceId);
+		batch.delete(docRef);
+	}
 	try {
-		const querySnapshot = await deleteDoc(serviceRef);
-		notifications.success('Service Deleted', 2000);
+		const querySnapshot = await batch.commit();
+		allServices.update((services) =>
+			services.filter((service) => !serviceIds.includes(service.serviceId))
+		);
+		activeServices.update((services) =>
+			services.filter((service) => !serviceIds.includes(service.serviceId))
+		);
+		notifications.success('Service(s) Deleted', 2000);
 		return querySnapshot;
 	} catch (e) {
-		console.error('Error deleting service: ', e);
-		notifications.danger('Error deleting service', 3000);
+		console.error('Error deleting service(s): ', e);
+		notifications.danger('Error deleting service(s)', 3000);
 	}
 };
 
@@ -360,5 +370,33 @@ export const deleteCustomer = async (customer: Customer): Promise<any | undefine
 	} catch (e) {
 		console.error('Error deleting customer: ', e);
 		notifications.danger('Error deleting customer', 3000);
+	}
+};
+
+export const writeServiceExpDates = async (services: Service[]): Promise<void> => {
+	const BATCH_SIZE = 20;
+	let operationsCount = 0;
+	let batch = writeBatch(db);
+	for (const service of services) {
+		const docRef = doc(db, 'services', service.serviceId);
+		batch.update(docRef, {
+			expirationDate: service.expirationDate
+		});
+		operationsCount++;
+		if (operationsCount === BATCH_SIZE) {
+			await batch.commit();
+			batch = writeBatch(db);
+			operationsCount = 0;
+		}
+	}
+	if (operationsCount > 0) {
+		try {
+			await batch.commit();
+			notifications.success('Service Expirations Added', 2000);
+		} catch (e) {
+			console.error('Error updating expiration dates: ', e);
+			notifications.danger('Error updating expiration dates', 3000);
+			throw e;
+		}
 	}
 };

@@ -2,7 +2,13 @@
 	import { onMount } from 'svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { createSearchStore } from '$lib/stores/search';
-	import { readCustomerDetail, readStore, checkAuth } from '$lib/firebase';
+	import {
+		deleteServices,
+		readCustomerDetail,
+		readStore,
+		writeServiceExpDates
+	} from '$lib/firebase';
+	import { Timestamp } from 'firebase/firestore';
 	import CustomerDetail from '$lib/CustomerDetail.svelte';
 	import { fade } from 'svelte/transition';
 	import {
@@ -107,6 +113,31 @@
 		});
 	}
 
+	function updateServiceExpDates(services: Service[]): void {
+		const today = new Date();
+		let servicesToUpdate: Service[] = [];
+		let servicesToDelete: string[] = [];
+		services.forEach((service) => {
+			if (service.expirationDate === undefined) {
+				const [monthA, dayA, yearA] = service.dropOffDate.split('/');
+				const dateA: Date = new Date(`${yearA}-${monthA}-${dayA}`);
+				// Expiration date is set for 2 years after drop off date
+				dateA.setFullYear(dateA.getFullYear() + 2);
+				service.expirationDate = Timestamp.fromDate(dateA);
+				servicesToUpdate.push(service);
+			}
+			if (service.expirationDate.toDate() < today) {
+				servicesToDelete.push(service.serviceId);
+			}
+		});
+		if (servicesToUpdate.length > 0) {
+			writeServiceExpDates(servicesToUpdate);
+		}
+		if (servicesToDelete.length > 0) {
+			deleteServices(servicesToDelete);
+		}
+	}
+
 	async function handleCustomerSelect(customerObject: Customer) {
 		const res = await readCustomerDetail(customerObject.id)
 			.then((returnedServices) => {
@@ -142,6 +173,8 @@
 					allServices.update((services) => [...services, service]);
 					customerServiceObject.allServices = [...customerServiceObject.allServices, service];
 				});
+				// Checks for expiration dates and adds them if necessary deletes if service is past the date
+				updateServiceExpDates(customerServiceObject.allServices);
 
 				allServices.update((services) => sortServiceDates(services));
 				activeServices.update((services) => sortServiceDates(services));
