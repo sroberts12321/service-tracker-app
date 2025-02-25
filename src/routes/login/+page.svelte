@@ -23,6 +23,7 @@
 
 	function recoverAccount(email: string) {
 		handlePasswordReset(email);
+		toggleForgotPassword();
 	}
 </script>
 
