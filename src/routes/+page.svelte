@@ -95,6 +95,18 @@
 		modalStore.trigger(settings);
 	}
 
+	function sortServiceDates(services: Service[]): Service[] {
+		return services.sort((a: Service, b: Service) => {
+			const [monthA, dayA, yearA] = a.dropOffDate.split('/');
+			const [monthB, dayB, yearB] = b.dropOffDate.split('/');
+
+			const dateA: Date = new Date(`${yearA}-${monthA}-${dayA}`);
+			const dateB: Date = new Date(`${yearB}-${monthB}-${dayB}`);
+
+			return dateB.getTime() - dateA.getTime();
+		});
+	}
+
 	async function handleCustomerSelect(customerObject: Customer) {
 		const res = await readCustomerDetail(customerObject.id)
 			.then((returnedServices) => {
@@ -129,6 +141,10 @@
 					allServices.update((services) => [...services, service]);
 					customerServiceObject.allServices = [...customerServiceObject.allServices, service];
 				});
+
+				allServices.update((services) => sortServiceDates(services));
+				activeServices.update((services) => sortServiceDates(services));
+
 				const c: ModalComponent = { ref: CustomerDetail };
 				const settings: ModalSettings = {
 					type: 'component',
