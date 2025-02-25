@@ -1,15 +1,28 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import { logoutUser } from '$lib/firebase';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
 	const protectedRoutes = [
 		{ path: '/', label: 'Search' },
 		{ path: '/add/', label: 'Add' }
 	];
 	function handleLogout() {
-		logoutUser();
+		const confirmLogoutModal: ModalSettings = {
+			type: 'confirm',
+			title: 'Please Confirm',
+			body: 'Are you sure you want to logout?',
+			response: (r: boolean) => {
+				if (r) {
+					logoutUser();
+					modalStore.close();
+				}
+			}
+		};
+		modalStore.trigger(confirmLogoutModal);
 	}
 	export let user;
+	const modalStore = getModalStore();
 </script>
 
 <header>
