@@ -21,7 +21,8 @@
 		allServices,
 		activeServices,
 		allCustomers,
-		customerInfo
+		customerInfo,
+		loading
 	} from '$lib/stores/customer-store';
 	import { Customer } from '$lib/customer';
 	import { Service } from '$lib/service';
@@ -30,13 +31,12 @@
 	let customerStore: Customer[] = [];
 	customerStore = $allCustomers;
 	allCustomers.subscribe((newStore) => (customerStore = newStore));
-	let loading = false;
 
 	onMount(async () => {
 		if (customerStore.length > 0) {
 			console.log('Data not updated');
 		} else {
-			loading = true;
+			loading.set(true);
 			console.log('Fetching Data');
 			const res = await readStore('customers')
 				.then((returnedCustomers) => {
@@ -48,7 +48,7 @@
 					notifications.danger('Error Getting Customer Data', 3000);
 				});
 			customerStore = $allCustomers;
-			loading = false;
+			loading.set(false);
 			return customerStore;
 		}
 	});
@@ -173,7 +173,7 @@
 	<title>Search</title>
 	<meta name="description" content="Find Customer" />
 </svelte:head>
-{#if loading}
+{#if $loading}
 	<div
 		in:fade={{ duration: 300 }}
 		class="container h-full mx-auto flex flex-col justify-center items-center"

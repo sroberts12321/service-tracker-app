@@ -32,3 +32,6 @@ export const allCustomers: Writable<Customer[]> = writable([]);
 
 // One of the many objects that exist in the allCustomers list
 export const customerInfo: Writable<Customer> = writable(initialCustomerInfoState);
+
+// Moving loading state here
+export const loading: Writable<boolean> = writable(false);

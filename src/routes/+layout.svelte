@@ -12,6 +12,7 @@
 	import { fade } from 'svelte/transition';
 	import { user, logoutUser, readStore } from '$lib/firebase';
 	import { goto } from '$app/navigation';
+	import { loading } from '$lib/stores/customer-store';
 
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
@@ -49,7 +50,9 @@
 	}
 
 	function handleRefresh() {
+		loading.set(true);
 		readStore('customers').then(() => {
+			loading.set(false);
 		});
 		drawerStore.close();
 	}
