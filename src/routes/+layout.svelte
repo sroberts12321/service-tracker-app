@@ -10,7 +10,7 @@
 	} from '@skeletonlabs/skeleton';
 	import Header from './Header.svelte';
 	import { fade } from 'svelte/transition';
-	import { user } from '$lib/firebase';
+	import { user, logoutUser, readStore } from '$lib/firebase';
 	import { goto } from '$app/navigation';
 
 	// Floating UI for Popups
@@ -39,6 +39,7 @@
 			body: 'Are you sure you want to logout?',
 			response: (r: boolean) => {
 				if (r) {
+					logoutUser();
 					modalStore.close();
 					drawerStore.close();
 				}
@@ -48,6 +49,8 @@
 	}
 
 	function handleRefresh() {
+		readStore('customers').then(() => {
+		});
 		drawerStore.close();
 	}
 </script>

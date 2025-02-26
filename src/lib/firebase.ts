@@ -170,6 +170,7 @@ export function logoutUser(authState: Auth = auth) {
 	signOut(authState)
 		.then(() => {
 			user.set(null);
+			allCustomers.set([]);
 			goto('/login');
 		})
 		.catch((error) => {
@@ -253,7 +254,36 @@ export const writeStore = async (key: 'services' | 'customers', value: any) => {
 export const readStore = async (key: string): Promise<any | undefined> => {
 	try {
 		const q = query(collection(db, key), orderBy('lastName'));
-		const querySnapshot = await getDocs(q);
+		const querySnapshot = await getDocs(q).then((returnedCustomers) => {
+			allCustomers.set([]);
+			returnedCustomers.forEach((doc: any) => {
+				let lastName = doc.get('lastName');
+				let firstName = doc.get('firstName');
+				let label = '';
+				if (firstName.length > 0) {
+					label = `${lastName}, ${firstName}`;
+				} else {
+					label = lastName;
+				}
+				let customer: Customer = {
+					id: doc.id,
+					documentId: doc.get('documentId'),
+					lastName,
+					firstName,
+					nickname: doc.get('nickname'),
+					phone: doc.get('phone'),
+					email: doc.get('email'),
+					balance: doc.get('balance'),
+					notes: doc.get('notes'),
+					searchTerms: doc.get('searchTerms'),
+					label
+				};
+				if (customer.notes === undefined) {
+					customer.notes = ' ';
+				}
+				allCustomers.update((customers) => [...customers, customer]);
+			});
+		});
 		return querySnapshot;
 	} catch (e) {
 		console.error('Error reading database: ', e);

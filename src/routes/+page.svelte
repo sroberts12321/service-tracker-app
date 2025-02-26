@@ -41,40 +41,12 @@
 			const res = await readStore('customers')
 				.then((returnedCustomers) => {
 					customerStore = [];
-					allCustomers.set([]);
-					returnedCustomers.forEach((doc: any) => {
-						let lastName = doc.get('lastName');
-						let firstName = doc.get('firstName');
-						let label = '';
-						if (firstName.length > 0) {
-							label = `${lastName}, ${firstName}`;
-						} else {
-							label = lastName;
-						}
-						let customer = new Customer(
-							doc.id,
-							doc.get('documentId'),
-							lastName,
-							firstName,
-							doc.get('nickname'),
-							doc.get('phone'),
-							doc.get('email'),
-							doc.get('balance'),
-							doc.get('notes'),
-							doc.get('searchTerms'),
-							label
-						);
-						if (customer.notes === undefined) {
-							customer.notes = ' ';
-						}
-						allCustomers.update((customers) => [...customers, customer]);
-					});
+					console.log('Customer Fetching Successful');
 				})
 				.catch((err) => {
 					console.error(err);
 					notifications.danger('Error Getting Customer Data', 3000);
 				});
-			console.log('Customer Fetching Successful');
 			customerStore = $allCustomers;
 			loading = false;
 			return customerStore;
