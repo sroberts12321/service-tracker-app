@@ -1,28 +1,25 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { logoutUser } from '$lib/firebase';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton';
 
 	const protectedRoutes = [
 		{ path: '/', label: 'Search' },
 		{ path: '/add/', label: 'Add' }
 	];
-	function handleLogout() {
-		const confirmLogoutModal: ModalSettings = {
-			type: 'confirm',
-			title: 'Please Confirm',
-			body: 'Are you sure you want to logout?',
-			response: (r: boolean) => {
-				if (r) {
-					logoutUser();
-					modalStore.close();
-				}
-			}
+	const drawerStore = getDrawerStore();
+	function openDrawer() {
+		const drawerSettings: DrawerSettings = {
+			describedby: 'drawer-1',
+			bgDrawer: 'bg-primary-900 text-white',
+			bgBackdrop: 'variant-glass-surface',
+			width: 'w-[80px] md:w-[180px]',
+			padding: 'p-4',
+			position: 'right',
+			rounded: 'rounded-xl'
 		};
-		modalStore.trigger(confirmLogoutModal);
+		drawerStore.open(drawerSettings);
 	}
 	export let user;
-	const modalStore = getModalStore();
 </script>
 
 <header>
@@ -59,10 +56,10 @@
 		{#if $user?.isAuthenticated}
 			<button
 				type="button"
-				class="btn variant-glass-surface mt-2 -ml-12"
-				on:click={() => handleLogout()}
+				class="btn btn-sm variant-glass-surface mt-2 -ml-6"
+				on:click={() => openDrawer()}
 			>
-				<span> Logout </span>
+				<span> Menu </span>
 			</button>
 		{/if}
 	</div>
