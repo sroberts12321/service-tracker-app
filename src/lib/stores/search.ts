@@ -9,19 +9,23 @@ export const createSearchStore = (data: Customer[]) => {
 		search: ''
 	});
 
-	const debouncedSearch = debounce((searchTerm: string, storeData: Customer[]) => {
-		update((store) => {
-			if (!searchTerm.trim()) {
+	const searchCustomers = (searchTerm: string, storeData: Customer[]) => {
+		if (!searchTerm.trim()) {
+			return update((store) => {
 				store.filtered = [];
 				return store;
-			}
+			});
+		}
 
+		return update((store) => {
 			store.filtered = storeData.filter((item: Customer) => {
-				return item.searchTerms.toLowerCase().includes(searchTerm.toLocaleLowerCase());
+				return item.searchTerms.toLowerCase().includes(searchTerm.toLowerCase());
 			});
 			return store;
 		});
-	}, 450);
+	};
+
+	const debouncedSearch = debounce(searchCustomers, 450);
 
 	return {
 		subscribe,
@@ -30,6 +34,11 @@ export const createSearchStore = (data: Customer[]) => {
 		setSearch: (term: string) => {
 			update((store) => ({ ...store, search: term }));
 			debouncedSearch(term, data);
+		},
+		searchImmediately: (term: string) => {
+			update((store) => ({ ...store, search: term }));
+			debouncedSearch.cancel();
+			searchCustomers(term, data);
 		}
 	};
 };

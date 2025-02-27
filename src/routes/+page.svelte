@@ -194,6 +194,12 @@
 							placeholder="Search..."
 							value={$searchStore.search}
 							on:input={(e) => searchStore.setSearch(e.currentTarget.value)}
+							on:keydown={(e) => {
+								if (e.key === 'Enter') {
+									e.preventDefault();
+									searchStore.searchImmediately(e.currentTarget.value);
+								}
+							}}
 						/>
 					</label>
 				</form>
