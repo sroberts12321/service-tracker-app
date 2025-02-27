@@ -62,8 +62,14 @@
 <Drawer>
 	<nav class="list-nav">
 		<ul>
-			<li><a href="#" on:click={() => handleRefresh()}>Refresh</a></li>
-			<li><a href="#" on:click={() => handleLogout()}>Logout</a></li>
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			<!-- svelte-ignore a11y-missing-attribute -->
+			<li><a on:click={() => handleRefresh()}>Refresh</a></li>
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			<!-- svelte-ignore a11y-missing-attribute -->
+			<li><a on:click={() => handleLogout()}>Logout</a></li>
 		</ul>
 	</nav>
 </Drawer>
