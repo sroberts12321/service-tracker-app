@@ -71,6 +71,7 @@
 				</div>
 			</form>
 			<div class="grid justify-items-end grid-cols-1 mt-2">
+				<!-- svelte-ignore a11y-invalid-attribute -->
 				<a href="#" on:click={toggleForgotPassword}>{forgotPassText}</a>
 			</div>
 			<div class="grid grid-cols-1">
@@ -99,6 +100,7 @@
 				{/if}
 			</div>
 			<div class="grid justify-items-end grid-cols-1 mt-5">
+				<!-- svelte-ignore a11y-invalid-attribute -->
 				<a href="#" on:click={toggleLogin}>{linkText}</a>
 			</div>
 		</div>
@@ -144,6 +146,7 @@
 				</button>
 			</div>
 			<div class="grid justify-items-end grid-cols-1 mt-5">
+				<!-- svelte-ignore a11y-invalid-attribute -->
 				<a href="#" on:click={toggleLogin}>{linkText}</a>
 			</div>
 		</div>

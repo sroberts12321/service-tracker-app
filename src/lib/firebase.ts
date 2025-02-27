@@ -185,8 +185,6 @@ export function checkAuth(authState: Auth = auth) {
 	return false;
 }
 
-await setPersistence(auth, browserLocalPersistence);
-
 const customerCollectionRef = collection(db, 'customers');
 const servicesCollectionRef = collection(db, 'services');
 
