@@ -10,6 +10,14 @@
 	import type { Service } from '$lib/service';
 	import Toast from '$lib/Toast.svelte';
 	import { Timestamp } from 'firebase/firestore';
+	import { onMount } from 'svelte';
+
+	let orderNumElement: any;
+	onMount(() => {
+		if (orderNumElement && orderNumElement.querySelector('input')) {
+			orderNumElement.querySelector('input').focus();
+		}
+	});
 
 	export let parent: any;
 
@@ -160,8 +168,12 @@
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
 		<form id="orderForm">
 			<div class="grid grid-cols-4 -mt-4">
-				<!-- svelte-ignore a11y-label-has-associated-control -->
 				<label class="label mt-2 mr-5 col-span-2">
+					<span class="h4">Dropoff Date</span>
+					<input class="input" type="date" bind:value={dropOffDate} />
+				</label>
+				<!-- svelte-ignore a11y-label-has-associated-control -->
+				<label class="label mt-2 col-span-2" bind:this={orderNumElement}>
 					<span class="h4">Order Number(s)</span>
 					<InputChip
 						on:add={onChipAdd}
@@ -175,10 +187,6 @@
 						name="chips"
 						placeholder={'0000'}
 					/>
-				</label>
-				<label class="label mt-2 col-span-2">
-					<span class="h4">Dropoff Date</span>
-					<input class="input" type="date" bind:value={dropOffDate} />
 				</label>
 				<label class="label mt-2 mr-5 col-span-2 row-span-2 overflow-auto">
 					<span class="h4">Order Notes: </span>
@@ -227,7 +235,7 @@
 			<button
 				class="btn {parent.buttonPositive}"
 				disabled={!(referenceNum || listOfRefNums.length > 0) || !dropOffDate}
-				on:click={handleAddNewService}>Submit Change</button
+				on:click={handleAddNewService}>Create Order</button
 			>
 		</footer>
 	</div>
