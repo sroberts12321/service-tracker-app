@@ -205,7 +205,7 @@
 					<div class="" />
 				{:else}
 					{#each $searchStore.filtered as customer}
-						<div class="card card-hover p-4 text-center m-5 grid content-between">
+						<div class="card card-hover p-4 text-center m-5 grid content-between min-w-fit">
 							<div class="m-1">
 								<h3 class="h3">{customer.label}</h3>
 							</div>
