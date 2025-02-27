@@ -136,7 +136,11 @@
 
 	function inputChipValidation(event: Event) {
 		if (event instanceof InputEvent && event.data != null) {
-			if (!numValidationRegEx.test(event.data) || Number(referenceNum) > 10000) {
+			if (
+				!numValidationRegEx.test(event.data) ||
+				Number(referenceNum) > 10000 ||
+				referenceNum.length > 5
+			) {
 				referenceNum = referenceNum.slice(0, referenceNum.length - 1);
 			}
 		}
